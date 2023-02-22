@@ -20,9 +20,8 @@ class DashboardLayout extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Container(
         color: background,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+        child: ListView(
+          physics: const BouncingScrollPhysics(),
           children: [
             Padding(
               padding: const EdgeInsets.only(
@@ -273,12 +272,12 @@ class DashboardLayout extends StatelessWidget {
               color: Colors.white,
               child: Column(
                 children: [
-                  Container(
+                  SizedBox(
                     height: size.height / 8,
                     width: size.width,
                     child: Row(
                       children: [
-                        Container(
+                        SizedBox(
                           height: size.height / 8,
                           width: size.width / 4,
                           child: SfCircularChart(
@@ -334,14 +333,14 @@ class DashboardLayout extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 4),
+                                const SizedBox(height: 4),
                                 SizedBox(
                                   height: 1,
                                   child: Container(
                                     color: textColor.withOpacity(0.3),
                                   ),
                                 ),
-                                SizedBox(height: 4),
+                                const SizedBox(height: 4),
                                 Row(
                                   children: [
                                     Expanded(
@@ -373,6 +372,96 @@ class DashboardLayout extends StatelessWidget {
                       ],
                     ),
                   ),
+                  SizedBox(
+                    width: size.width,
+                    height: size.height / 20,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 2.0,
+                      ),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Last Test',
+                            style: TextStyle(
+                              color: textColor,
+                              fontWeight: FontWeight.w400,
+                              fontSize: size.height * 0.0175,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                          const Spacer(),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2.0),
+                            child: SizedBox(
+                              height: size.height * .075,
+                              child: ElevatedButton(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: background_dark,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                ),
+                                onPressed: () {},
+                                child: Padding(
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: Text(
+                                    'view more',
+                                    style: TextStyle(
+                                        fontSize: size.height * 0.013,
+                                        letterSpacing: 1.7,
+                                        color: textColor,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: size.width,
+                    height: size.height / 4.07,
+                    child: SfCartesianChart(
+                        margin: const EdgeInsets.only(
+                          top: 8.0,
+                        ),
+                        primaryXAxis: CategoryAxis(),
+                        borderWidth: 1.0,
+                        primaryYAxis:
+                            NumericAxis(minimum: 0, maximum: 40, interval: 5),
+                        borderColor: textColor,
+                        series: <ChartSeries<ChartData, String>>[
+                          StackedColumnSeries<ChartData, String>(
+                            groupName: "GroupA",
+                            dataSource: [
+                              ChartData('ph', 9, background),
+                              ChartData('temperature', 30.45, background_dark),
+                              ChartData('TDS', 20, background),
+                              ChartData('turbidity', 15, background_dark),
+                            ],
+                            xValueMapper: (ChartData data, _) => data.x,
+                            yValueMapper: (ChartData data, _) => data.y,
+                            color: primaryColor,
+                          ),
+                          StackedColumnSeries<ChartData, String>(
+                            groupName: "GroupB",
+                            dataSource: [
+                              ChartData('ph', 7, background),
+                              ChartData('temperature', 37, background_dark),
+                              ChartData('TDS', 5, background),
+                              ChartData('turbidity', 10, background_dark),
+                            ],
+                            xValueMapper: (ChartData data, _) => data.x,
+                            yValueMapper: (ChartData data, _) => data.y,
+                            color: background_dark,
+                          ),
+                        ]),
+                  )
                 ],
               ),
             ),
