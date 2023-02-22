@@ -4,6 +4,10 @@ void navigateTo(context, Widget screen) {
   Navigator.of(context).push(createRoute(screen));
 }
 
+void navigateBack(context) {
+  Navigator.of(context).pop();
+}
+
 void navigateToAndReplace(context, Widget screen) {
   Navigator.of(context).pushReplacement(createRoute(screen));
 }

@@ -1,9 +1,13 @@
 import 'package:application_gp/Constants/constant.dart';
+import 'package:application_gp/components/navigator.dart';
 import 'package:application_gp/components/rounded_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+
+import '../components/view_more_button.dart';
+import '../modules/view_more/view_more.dart';
 
 class DashboardLayout extends StatelessWidget {
   const DashboardLayout({super.key});
@@ -90,9 +94,11 @@ class DashboardLayout extends StatelessWidget {
                         color: background_dark, shape: BoxShape.circle),
                     child: IconButton(
                       color: textColor,
+                      padding: EdgeInsets.zero,
                       onPressed: () {},
                       icon: const Icon(
                         Icons.bluetooth,
+                        size: 20,
                       ),
                     ),
                   )
@@ -392,32 +398,9 @@ class DashboardLayout extends StatelessWidget {
                             ),
                           ),
                           const Spacer(),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2.0),
-                            child: SizedBox(
-                              height: size.height * .075,
-                              child: ElevatedButton(
-                                clipBehavior: Clip.antiAliasWithSaveLayer,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: background_dark,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
-                                ),
-                                onPressed: () {},
-                                child: Padding(
-                                  padding: const EdgeInsets.all(2.0),
-                                  child: Text(
-                                    'view more',
-                                    style: TextStyle(
-                                        fontSize: size.height * 0.013,
-                                        letterSpacing: 1.7,
-                                        color: textColor,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ),
-                              ),
-                            ),
+                          ViewMoreButton(
+                            size: size,
+                            screen: const ViewMore(),
                           ),
                         ],
                       ),
