@@ -3,7 +3,6 @@ import 'package:application_gp/components/navigator.dart';
 import 'package:flutter/material.dart';
 
 import '../../components/record_item.dart';
-import '../../components/view_more_button.dart';
 
 class ViewMore extends StatelessWidget {
   const ViewMore({super.key});
@@ -22,9 +21,18 @@ class ViewMore extends StatelessWidget {
             onPressed: () {
               navigateBack(context);
             }),
+        title: const Text(
+          'Records',
+          style: TextStyle(
+            color: textColor,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 1.7,
+          ),
+        ),
+        centerTitle: true,
       ),
       body: ListView.builder(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         itemCount: 20,
         itemBuilder: (context, index) => RecordItem(size: size, isClean: false),
       ),

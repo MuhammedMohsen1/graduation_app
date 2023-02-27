@@ -1,12 +1,16 @@
 import 'package:application_gp/Constants/constant.dart';
+import 'package:application_gp/components/functions.dart';
 import 'package:application_gp/components/navigator.dart';
-import 'package:application_gp/components/rounded_buttons.dart';
+import 'package:application_gp/modules/add_new/bluetooth_on.dart';
+import 'package:application_gp/modules/welcome_screen/welcome_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:geolocator_platform_interface/src/models/position.dart'
+    as positioned;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-
+import 'package:flutter_blue/flutter_blue.dart';
 import '../components/view_more_button.dart';
+import '../modules/add_new/Add_New.dart';
 import '../modules/view_more/view_more.dart';
 
 class DashboardLayout extends StatelessWidget {
@@ -14,11 +18,6 @@ class DashboardLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<ChartData> chartData = [
-      ChartData('David', 25),
-      ChartData('Steve', 38),
-    ];
-
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -31,7 +30,7 @@ class DashboardLayout extends StatelessWidget {
               padding: const EdgeInsets.only(
                 left: 14,
                 right: 14,
-                top: 35,
+                top: 14,
               ),
               child: Row(
                 children: [
@@ -89,16 +88,31 @@ class DashboardLayout extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  Container(
-                    decoration: const BoxDecoration(
-                        color: background_dark, shape: BoxShape.circle),
-                    child: IconButton(
-                      color: textColor,
-                      padding: EdgeInsets.zero,
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.bluetooth,
-                        size: 20,
+                  InkWell(
+                    onTap: () async {
+                      SharedPreferences pref =
+                          await SharedPreferences.getInstance();
+                      pref.setBool('isLogin', false).then((value) {
+                        navigateToAndReplace(context, const WelcomeScreen());
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: background_dark,
+                          border: Border.all(
+                            width: 0.5,
+                            color: textColor,
+                          ),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Sign out',
+                          style: TextStyle(
+                              color: textColor,
+                              fontSize: size.height * 0.015,
+                              letterSpacing: 1.0),
+                        ),
                       ),
                     ),
                   )
@@ -207,7 +221,27 @@ class DashboardLayout extends StatelessWidget {
                                               BorderRadius.circular(25),
                                         ),
                                       ),
-                                      onPressed: () {},
+                                      onPressed: () async {
+                                        FlutterBlue flutterBlue =
+                                            FlutterBlue.instance;
+                                        // Start scanning
+                                        bool isOn = await flutterBlue.isOn;
+                                        if (isOn) {
+                                          handleLocationPermission(context);
+                                          positioned.Position position;
+                                          get_Position().then((value) {
+                                            position = value;
+                                            navigateTo(
+                                                context,
+                                                NewScreen(
+                                                  position: position,
+                                                ));
+                                          });
+                                        } else {
+                                          navigateTo(
+                                              context, const BluetoothScreen());
+                                        }
+                                      },
                                       child: Row(
                                         children: [
                                           const Icon(

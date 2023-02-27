@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Constants/constant.dart';
 
@@ -34,4 +36,35 @@ bool validate(String? email, String? password) {
   } else {
     return true;
   }
+}
+
+Future<bool> handleLocationPermission(BuildContext context) async {
+  bool serviceEnabled;
+  LocationPermission permission;
+
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    showToast('Location services are disabled. Please enable the services',
+        TOAST_STATUS.TOAST_FAILED);
+    return false;
+  }
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      showToast('Location permissions are denied', TOAST_STATUS.TOAST_FAILED);
+
+      return false;
+    }
+  }
+  if (permission == LocationPermission.deniedForever) {
+    showToast('Location permissions are denied', TOAST_STATUS.TOAST_FAILED);
+    return false;
+  }
+  return true;
+}
+
+Future<Position> get_Position() async {
+  return await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.best);
 }

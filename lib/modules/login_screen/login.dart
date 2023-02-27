@@ -1,7 +1,9 @@
 import 'package:application_gp/components/navigator.dart';
+import 'package:application_gp/components/sharedPreference.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Constants/constant.dart';
 import '../../components/already_have_account.dart';
@@ -69,8 +71,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             email: emailController.text,
                             password: passwordController.text)
                         .then((value) {
-                      showToast('Login Success', TOAST_STATUS.TOAST_SUCCESS);
                       if (value.toString().isNotEmpty) {
+                        store_data('isLogin', true, types.BOOL);
                         navigateToAndReplace(context, const DashboardLayout());
                       }
                     }).onError((error, stackTrace) {

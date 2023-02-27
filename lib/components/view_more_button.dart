@@ -5,12 +5,13 @@ import '../modules/view_more/view_more.dart';
 import 'navigator.dart';
 
 class ViewMoreButton extends StatelessWidget {
-  const ViewMoreButton({
-    super.key,
-    required this.size,
-    required this.screen,
-  });
+  const ViewMoreButton(
+      {super.key,
+      required this.size,
+      required this.screen,
+      this.title = "view more"});
   final Widget screen;
+  final String title;
   final Size size;
 
   @override
@@ -29,7 +30,7 @@ class ViewMoreButton extends StatelessWidget {
           navigateTo(context, screen);
         },
         child: Text(
-          'view more',
+          title,
           style: TextStyle(
               fontSize: size.height * 0.013,
               letterSpacing: 1.7,

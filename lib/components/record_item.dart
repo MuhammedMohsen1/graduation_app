@@ -2,6 +2,7 @@ import 'package:application_gp/components/view_more_button.dart';
 import 'package:flutter/material.dart';
 
 import '../Constants/constant.dart';
+import '../modules/view_details/view_details.dart';
 import '../modules/view_more/view_more.dart';
 
 class RecordItem extends StatelessWidget {
@@ -42,7 +43,8 @@ class RecordItem extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          'ASWQM-1',
+                          'MOHSEN-1',
+                          overflow: TextOverflow.clip,
                           style: TextStyle(
                             color: textColor,
                             fontWeight: FontWeight.w400,
@@ -54,6 +56,7 @@ class RecordItem extends StatelessWidget {
                       Expanded(
                         child: Text(
                           '22/2/2023',
+                          overflow: TextOverflow.clip,
                           style: TextStyle(
                             color: textColor,
                             fontWeight: FontWeight.w300,
@@ -91,6 +94,7 @@ class RecordItem extends StatelessWidget {
                                 children: [
                                   Text(
                                     'Drinkable water',
+                                    overflow: TextOverflow.clip,
                                     style: TextStyle(
                                       color: textColor,
                                       fontWeight: FontWeight.w400,
@@ -110,6 +114,7 @@ class RecordItem extends StatelessWidget {
                                 children: [
                                   Text(
                                     'Polluted water',
+                                    overflow: TextOverflow.clip,
                                     style: TextStyle(
                                       color: Colors.redAccent,
                                       fontWeight: FontWeight.w400,
@@ -129,9 +134,8 @@ class RecordItem extends StatelessWidget {
                   ),
                   ViewMoreButton(
                     size: size,
-                    /* add different screen*/
-                    /* TODO: */
-                    screen: const ViewMore(),
+                    title: "more details",
+                    screen: const ViewDetails(),
                   ),
                 ],
               ),
