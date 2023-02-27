@@ -66,5 +66,5 @@ Future<bool> handleLocationPermission(BuildContext context) async {
 
 Future<Position> get_Position() async {
   return await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.best);
+      desiredAccuracy: LocationAccuracy.lowest);
 }
