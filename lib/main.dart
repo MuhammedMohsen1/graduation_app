@@ -1,3 +1,4 @@
+import 'package:application_gp/components/position.dart';
 import 'package:application_gp/layout/dashboard_layout.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'modules/welcome_screen/welcome_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  GetPosition();
   Firebase.initializeApp();
   SharedPreferences pref = await SharedPreferences.getInstance();
   bool isLogin = pref.getBool('isLogin') as bool;

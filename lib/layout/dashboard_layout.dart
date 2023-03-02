@@ -1,6 +1,7 @@
 import 'package:application_gp/Constants/constant.dart';
 import 'package:application_gp/components/functions.dart';
 import 'package:application_gp/components/navigator.dart';
+import 'package:application_gp/components/position.dart';
 import 'package:application_gp/modules/add_new/bluetooth_on.dart';
 import 'package:application_gp/modules/welcome_screen/welcome_screen.dart';
 import 'package:flutter/material.dart';
@@ -227,16 +228,16 @@ class DashboardLayout extends StatelessWidget {
                                         // Start scanning
                                         bool isOn = await flutterBlue.isOn;
                                         if (isOn) {
-                                          handleLocationPermission(context);
-                                          positioned.Position position;
-                                          get_Position().then((value) {
-                                            position = value;
-                                            navigateTo(
-                                                context,
-                                                NewScreen(
-                                                  position: position,
-                                                ));
-                                          });
+                                          GetPosition.handleLocationPermission(
+                                              context);
+
+                                          positioned.Position position =
+                                              GetPosition().get();
+                                          navigateTo(
+                                              context,
+                                              NewScreen(
+                                                position: position,
+                                              ));
                                         } else {
                                           navigateTo(
                                               context, const BluetoothScreen());
