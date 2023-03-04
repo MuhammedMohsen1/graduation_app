@@ -116,8 +116,8 @@ class _NewScreenState extends State<NewScreen>
                         child: FlutterMap(
                           mapController: mapcontroller,
                           options: MapOptions(
-                              center: LatLng(
-                                  position!.latitude, position!.longitude),
+                              center:
+                                  LatLng(position.latitude, position.longitude),
                               zoom: 14.0),
                           children: [
                             TileLayer(

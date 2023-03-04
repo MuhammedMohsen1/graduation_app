@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'components/sharedPreference.dart';
+import 'modules/Customer/Customer_Dashboard.dart';
 import 'modules/welcome_screen/welcome_screen.dart';
 
 void main() async {
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'AWSQM',
       debugShowCheckedModeBanner: false,
-      home: isLogin ? const DashboardLayout() : const WelcomeScreen(),
+      home: isLogin ? const Customer_Dashboard() : const WelcomeScreen(),
     );
   }
 }
