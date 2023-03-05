@@ -1,8 +1,16 @@
 import 'package:application_gp/Constants/constant.dart';
+import 'package:application_gp/components/navigator.dart';
 import 'package:application_gp/modules/Customer/cubit/customer_cubit_cubit.dart';
+import 'package:application_gp/modules/view_more/view_more.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:latlong2/latlong.dart';
+import '../../layout/dashboard_layout.dart';
+import '../view_details/view_details.dart';
+import 'Screens/HomeScreen.dart';
 
 class Customer_Dashboard extends StatelessWidget {
   const Customer_Dashboard({super.key});
@@ -114,59 +122,7 @@ class Customer_Dashboard extends StatelessWidget {
                           const SizedBox(
                             height: 14,
                           ),
-                          Stack(
-                            children: [
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Image.asset(
-                                  "assets/images/save_water.png",
-                                  width: size.width * 0.5,
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Keep it pure,',
-                                            style: TextStyle(
-                                              color: textColor,
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: size.height * 0.032,
-                                              letterSpacing: 2,
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 8,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0),
-                                            child: Text(
-                                              'water is yours.',
-                                              style: TextStyle(
-                                                color: textColor,
-                                                fontWeight: FontWeight.w300,
-                                                fontSize: size.height * 0.032,
-                                                letterSpacing: 2,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                          cubit.screens[cubit.screenIndex],
                         ],
                       ),
                     ),
@@ -222,6 +178,89 @@ class Customer_Dashboard extends StatelessWidget {
   }
 }
 
+class CircularWidget extends StatelessWidget {
+  const CircularWidget({
+    super.key,
+    required this.size,
+    required this.title,
+    required this.data,
+    required this.maximum,
+  });
+
+  final Size size;
+  final String title;
+  final List<ChartData> data;
+  final double maximum;
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      flex: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          height: size.height / 3,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: const [
+                BoxShadow(
+                  blurRadius: 2.0,
+                  blurStyle: BlurStyle.outer,
+                  color: textColor,
+                ),
+              ]),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: size.height * 0.017,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: SfCircularChart(
+                  legend:
+                      Legend(isVisible: true, position: LegendPosition.bottom
+                          // Border color and border width of legend
+                          ),
+                  margin: EdgeInsets.zero,
+                  series: <CircularSeries>[
+                    // Render radial chart
+
+                    RadialBarSeries<ChartData, String>(
+                      dataSource: data,
+                      animationDuration: 600,
+                      animationDelay: 200,
+                      xValueMapper: (ChartData data, _) => data.x,
+                      yValueMapper: (ChartData data, _) => data.y,
+                      maximumValue: maximum,
+                      cornerStyle: CornerStyle.endCurve,
+                      useSeriesColor: true,
+                      trackOpacity: 0.15,
+                      dataLabelSettings: DataLabelSettings(
+                        // Renders the data label
+                        isVisible: true,
+                        textStyle: TextStyle(
+                            fontSize: size.height * 0.011,
+                            color: textColor,
+                            letterSpacing: 1),
+                      ),
+                    )
+                  ],
+                  palette: [primaryColor, background_dark],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class BottomIcon extends StatelessWidget {
   const BottomIcon({
     super.key,
@@ -234,23 +273,27 @@ class BottomIcon extends StatelessWidget {
   final IconData icon;
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Expanded(
       child: GestureDetector(
         onTap: () {
           cubit.changeTheScreen(index);
         },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-          child: Icon(
-            icon,
-            shadows: [
-              Shadow(
-                  color: cubit.screenIndex == index
-                      ? Colors.black
-                      : Colors.transparent,
-                  blurRadius: 20.0)
-            ],
-            color: cubit.screenIndex == index ? background : textColor,
+        child: SizedBox(
+          height: size.height / 17,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+            child: Icon(
+              icon,
+              shadows: [
+                Shadow(
+                    color: cubit.screenIndex == index
+                        ? Colors.black
+                        : Colors.transparent,
+                    blurRadius: 20.0)
+              ],
+              color: cubit.screenIndex == index ? background : textColor,
+            ),
           ),
         ),
       ),
