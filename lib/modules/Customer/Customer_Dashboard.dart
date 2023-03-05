@@ -47,84 +47,12 @@ class Customer_Dashboard extends StatelessWidget {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 14,
-                              right: 14,
-                              top: 14,
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(1),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: textColor,
-                                      style: BorderStyle.solid,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Container(
-                                    width: size.width / 7,
-                                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Image.asset(
-                                        'assets/images/profile_photo.png'),
-                                  ),
-                                ),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 8.0),
-                                  child: Text(
-                                    'Mohammed Mohsen',
-                                    style: TextStyle(
-                                      color: textColor,
-                                      fontWeight: FontWeight.w500,
-                                      letterSpacing: .8,
-                                    ),
-                                  ),
-                                ),
-                                const Spacer(),
-                                InkWell(
-                                  onTap: () {},
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        color: background_dark,
-                                        border: Border.all(
-                                          width: 0.5,
-                                          color: textColor,
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Sign out',
-                                        style: TextStyle(
-                                            color: textColor,
-                                            fontSize: size.height * 0.015,
-                                            letterSpacing: 1.0),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 14,
-                          ),
-                          cubit.screens[cubit.screenIndex],
-                        ],
-                      ),
+                    ListView(
+                      shrinkWrap: true,
+                      physics: BouncingScrollPhysics(),
+                      children: [
+                        cubit.screens[cubit.screenIndex],
+                      ],
                     ),
                     Align(
                       alignment: Alignment.bottomCenter,

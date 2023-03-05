@@ -10,7 +10,7 @@ import 'modules/welcome_screen/welcome_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  GetPosition();
+  GetPosition(true);
   Firebase.initializeApp();
   SharedPreferences pref = await SharedPreferences.getInstance();
   bool isLogin = pref.getBool('isLogin') as bool;

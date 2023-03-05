@@ -232,7 +232,7 @@ class DashboardLayout extends StatelessWidget {
                                               context);
 
                                           positioned.Position position =
-                                              GetPosition().get();
+                                              GetPosition(true).get();
                                           navigateTo(
                                               context,
                                               NewScreen(

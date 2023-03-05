@@ -9,6 +9,8 @@ class RoundedInput extends StatefulWidget {
   bool? isPassword;
   final Function onchanged;
   TextEditingController controller;
+  double width;
+  double height;
   RoundedInput({
     super.key,
     required this.hintText,
@@ -17,23 +19,28 @@ class RoundedInput extends StatefulWidget {
     required this.onchanged,
     this.isPassword = false,
     required this.controller,
+    this.width = 0,
+    this.height = 0,
   });
 
   @override
-  State<RoundedInput> createState() => _RoundedInputState(hintText, controller);
+  State<RoundedInput> createState() =>
+      _RoundedInputState(hintText, controller, width, height);
 }
 
 class _RoundedInputState extends State<RoundedInput> {
   bool isVisible = false;
   final String hintText;
   final TextEditingController controller;
-  _RoundedInputState(this.hintText, this.controller);
+  final double width;
+  final double height;
+  _RoundedInputState(this.hintText, this.controller, this.width, this.height);
   @override
   Widget build(BuildContext context) {
     return widget.isPassword!
         ? Container(
-            height: widget.size.height * .075,
-            width: widget.size.width * 0.75,
+            height: height == 0 ? widget.size.height * .075 : height,
+            width: width == 0 ? widget.size.width * 0.75 : width,
             decoration: BoxDecoration(
               color: primaryColor.withOpacity(0.3),
               borderRadius: BorderRadius.circular(25),

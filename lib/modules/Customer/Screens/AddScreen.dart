@@ -52,7 +52,7 @@ class _AddScreenState extends State<AddScreen>
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     var cubit = CustomerCubitCubit.get(context);
-    return Stack(
+    return Column(
       children: [
         Visibility(
           visible: !isChosen,
@@ -60,7 +60,7 @@ class _AddScreenState extends State<AddScreen>
             padding: const EdgeInsets.all(4.0),
             child: Container(
               clipBehavior: Clip.antiAliasWithSaveLayer,
-              height: size.height / 1.35,
+              height: size.height / 1.55,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: const [
@@ -305,7 +305,9 @@ class _AddScreenState extends State<AddScreen>
           visible: isChosen,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Column(
+            child: ListView(
+              shrinkWrap: true,
+              physics: BouncingScrollPhysics(),
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -320,7 +322,7 @@ class _AddScreenState extends State<AddScreen>
                 ),
                 ListView.builder(
                   shrinkWrap: true,
-                  itemCount: 6,
+                  itemCount: 8,
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) => AllTests(
                     size: size,
@@ -332,7 +334,39 @@ class _AddScreenState extends State<AddScreen>
               ],
             ),
           ),
-        )
+        ),
+        Visibility(
+          visible: !isChosen,
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+            child: ElevatedButton(
+              onPressed: () {
+                isChosen = !isChosen;
+                setState(() {});
+              },
+              style: ButtonStyle(
+                animationDuration: Duration(milliseconds: 600),
+                backgroundColor:
+                    MaterialStateColor.resolveWith((states) => background),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Center(
+                  child: Text(
+                    'SKIP',
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: size.height * 0.018,
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

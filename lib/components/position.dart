@@ -5,16 +5,18 @@ import 'functions.dart';
 
 class GetPosition {
   static Position _position = Position(
-      longitude: 31.2,
-      latitude: 29.5,
+      longitude: 31.225180,
+      latitude: 29.368972,
       timestamp: DateTime(2023),
       accuracy: 1.0,
       altitude: 100.0,
       heading: 0.0,
       speed: 00.0,
       speedAccuracy: 0.0);
-  GetPosition() {
-    _get();
+  GetPosition(bool firstTime) {
+    if (firstTime) {
+      _get();
+    }
   }
   static Future<bool> handleLocationPermission(BuildContext context) async {
     bool serviceEnabled;
