@@ -1,5 +1,6 @@
 import 'package:application_gp/Constants/constant.dart';
 import 'package:application_gp/components/rounded_buttons.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:application_gp/modules/login_screen/Sign_Up.dart';
 import 'package:application_gp/modules/login_screen/login.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,7 @@ class WelcomeScreen extends StatelessWidget {
                   size: size,
                   title: 'Sign up',
                   function: () {
-                    navigateTo(context, Sign_Up_Screen());
+                    navigateTo(context, Sign_Up_Screen(isEmployee: false));
                   }),
               const Spacer(),
               Padding(

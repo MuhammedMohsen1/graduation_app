@@ -13,26 +13,44 @@ void main() async {
   GetPosition(true);
   Firebase.initializeApp();
   SharedPreferences pref = await SharedPreferences.getInstance();
-  bool isLogin = pref.getBool('isLogin') as bool;
+  bool? isLogin = pref.getBool('isLogin');
+  bool? isEmployee = pref.getBool('isEmployee');
+  print('isLogin is $isLogin');
+  print('isEmployee is $isEmployee');
+  if (isEmployee == null || isLogin == null) {
+    isEmployee = false;
+    isLogin = false;
+  }
   runApp(MyApp(
     isLogin: isLogin,
+    isEmployee: isEmployee,
   ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key, this.isLogin});
-  final isLogin;
+  const MyApp({super.key, required this.isLogin, required this.isEmployee});
+  final bool isLogin;
+  final bool isEmployee;
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-
+    Widget widget;
+    if (isLogin) {
+      if (isEmployee) {
+        widget = const DashboardLayout();
+      } else {
+        widget = const Customer_Dashboard();
+      }
+    } else {
+      widget = const WelcomeScreen();
+    }
     return MaterialApp(
       title: 'AWSQM',
       debugShowCheckedModeBanner: false,
-      home: isLogin ? const Customer_Dashboard() : const WelcomeScreen(),
+      home: widget,
     );
   }
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 
-import "package:flutter_map/flutter_map.dart";
 import "package:http/http.dart" as http;
 import 'package:syncfusion_flutter_charts/charts.dart';
 import "dart:convert" as convert;

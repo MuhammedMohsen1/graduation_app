@@ -5,14 +5,17 @@ import '../modules/view_more/view_more.dart';
 import 'navigator.dart';
 
 class ViewMoreButton extends StatelessWidget {
-  const ViewMoreButton(
-      {super.key,
-      required this.size,
-      required this.screen,
-      this.title = "view more"});
+  ViewMoreButton({
+    super.key,
+    required this.size,
+    required this.screen,
+    this.title = "view more",
+    this.color = background_dark,
+  });
   final Widget screen;
   final String title;
   final Size size;
+  Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +24,7 @@ class ViewMoreButton extends StatelessWidget {
       child: ElevatedButton(
         clipBehavior: Clip.antiAliasWithSaveLayer,
         style: ElevatedButton.styleFrom(
-          backgroundColor: background_dark,
+          backgroundColor: color,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25),
           ),

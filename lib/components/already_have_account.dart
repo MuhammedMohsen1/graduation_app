@@ -30,7 +30,11 @@ class AlreadyHaveAccount extends StatelessWidget {
         InkWell(
           onTap: () {
             login
-                ? navigateTo(context, Sign_Up_Screen())
+                ? navigateTo(
+                    context,
+                    Sign_Up_Screen(
+                      isEmployee: false,
+                    ))
                 : navigateTo(context, LoginScreen());
           },
           child: Padding(

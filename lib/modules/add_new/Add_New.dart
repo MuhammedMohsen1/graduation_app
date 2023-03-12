@@ -1,21 +1,21 @@
 import 'dart:ui';
 
-import 'package:application_gp/components/rounded_buttons.dart';
+import 'package:application_gp/Models/testData.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import '../../Constants/constant.dart';
-import '../../components/functions.dart';
+import '../../components/bluetooth.dart';
 import '../../components/navigator.dart';
 
 class NewScreen extends StatefulWidget {
-  NewScreen({super.key, required this.position}) {}
+  NewScreen({super.key, required this.position, required this.bluetooth}) {}
   final Position position;
+  final Bluetooth bluetooth;
   @override
-  State<NewScreen> createState() => _NewScreenState(position);
+  State<NewScreen> createState() => _NewScreenState(position, bluetooth);
 }
 
 class _NewScreenState extends State<NewScreen>
@@ -23,10 +23,13 @@ class _NewScreenState extends State<NewScreen>
   Position position;
   late final AnimationController pleaseController;
   late final Animation pleaseAnimation;
-  _NewScreenState(this.position);
+  testData? data;
+  final Bluetooth bluetooth;
+  _NewScreenState(this.position, this.bluetooth);
 
   @override
   void initState() {
+    bluetooth.readData();
     pleaseController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -46,17 +49,7 @@ class _NewScreenState extends State<NewScreen>
   }
 
   void scanForDevices() async {
-    // Start scanning
-    FlutterBlue flutterBlue = FlutterBlue.instance;
-    flutterBlue.startScan(timeout: const Duration(seconds: 4));
-
-// Listen to scan results
-    var subscription = flutterBlue.scanResults.listen((results) {
-      // do something wit  h scan results
-      print(results);
-    });
-// Stop scanning
-    flutterBlue.stopScan();
+    // TODO:
   }
 
   MapController mapcontroller = MapController();

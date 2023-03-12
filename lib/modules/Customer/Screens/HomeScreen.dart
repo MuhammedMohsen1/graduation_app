@@ -2,10 +2,12 @@ import 'package:application_gp/Constants/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../components/navigator.dart';
 import '../../../layout/dashboard_layout.dart';
 import '../../view_details/view_details.dart';
 import '../../view_more/view_more.dart';
+import '../../welcome_screen/welcome_screen.dart';
 import '../Customer_Dashboard.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -60,7 +62,14 @@ class HomeScreen extends StatelessWidget {
               ),
               const Spacer(),
               InkWell(
-                onTap: () {},
+                onTap: () async {
+                  SharedPreferences pref =
+                      await SharedPreferences.getInstance();
+                  pref.setBool('isLogin', false).then((value) {
+                    pref.setBool('isEmployee', false).then((value) =>
+                        navigateToAndReplace(context, const WelcomeScreen()));
+                  });
+                },
                 child: Container(
                   decoration: BoxDecoration(
                       color: background_dark,
