@@ -1,5 +1,6 @@
 import 'package:application_gp/Constants/constant.dart';
 import 'package:application_gp/components/navigator.dart';
+import 'package:application_gp/components/position.dart';
 import 'package:application_gp/modules/Customer/cubit/customer_cubit_cubit.dart';
 import 'package:application_gp/modules/view_more/view_more.dart';
 import 'package:flutter/material.dart';
@@ -8,12 +9,24 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:latlong2/latlong.dart';
+import '../../components/GetData.dart';
+import '../../components/updatingData.dart';
 import '../../layout/dashboard_layout.dart';
 import '../view_details/view_details.dart';
 import 'Screens/HomeScreen.dart';
 
-class Customer_Dashboard extends StatelessWidget {
+class Customer_Dashboard extends StatefulWidget {
   const Customer_Dashboard({super.key});
+
+  @override
+  State<Customer_Dashboard> createState() => _Customer_DashboardState();
+}
+
+class _Customer_DashboardState extends State<Customer_Dashboard> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

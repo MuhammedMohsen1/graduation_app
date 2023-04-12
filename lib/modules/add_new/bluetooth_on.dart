@@ -1,33 +1,45 @@
 import 'dart:async';
 
-import 'package:app_settings/app_settings.dart';
-import 'package:application_gp/components/functions.dart';
 import 'package:application_gp/components/navigator.dart';
 import 'package:application_gp/components/rounded_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Constants/constant.dart';
 import '../../components/bluetooth.dart';
 import '../../components/position.dart';
-import '../../components/sharedPreference.dart';
 import 'Add_New.dart';
 
 class BluetoothScreen extends StatefulWidget {
-  const BluetoothScreen({super.key});
-
+  BluetoothScreen({super.key, this.email, this.docId, this.position_local});
+  String? email = 'none';
+  String? docId = 'none';
+  Position? position_local = Position(
+      longitude: 31.2652,
+      latitude: 29.1325,
+      timestamp: DateTime.now(),
+      accuracy: 0,
+      altitude: 0,
+      heading: 0,
+      speed: 0,
+      speedAccuracy: 0);
   @override
-  State<BluetoothScreen> createState() => _BluetoothScreenState();
+  State<BluetoothScreen> createState() =>
+      _BluetoothScreenState(email!, docId!, position_local!);
 }
 
 class _BluetoothScreenState extends State<BluetoothScreen> {
   bool isOn = false;
   late Timer timer;
+  final String email;
+  final String docId;
+  final Position position_local;
+
+  _BluetoothScreenState(this.email, this.docId, this.position_local);
   @override
   void initState() {
-    timer = Timer.periodic(Duration(seconds: 2), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 2), (timer) {
       check();
     });
 
@@ -87,7 +99,7 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
                   function: () async {
                     var bluetooth = Bluetooth();
                     bluetooth.devices.clear();
-                    if (isOn == null) isOn = false;
+                    isOn ??= false;
                     if (!isOn) {
                       bluetooth.request_bluetooth();
                     } else {
@@ -109,12 +121,12 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
                                       color: textColor,
                                     ),
                                   ),
-                                  Spacer(),
+                                  const Spacer(),
                                   IconButton(
                                     onPressed: () {
                                       setState(() {});
                                     },
-                                    icon: Icon(
+                                    icon: const Icon(
                                       size: 18,
                                       Icons.refresh_rounded,
                                       color: textColor,
@@ -154,18 +166,40 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
                                                       await bluetooth
                                                           .connectDevice();
                                                   if (isConnected == 0) {
+                                                    // ignore: use_build_context_synchronously
                                                     GetPosition
                                                         .handleLocationPermission(
                                                             context);
 
                                                     Position position =
                                                         GetPosition(true).get();
-                                                    navigateTo(
-                                                        context,
-                                                        NewScreen(
-                                                          position: position,
-                                                          bluetooth: bluetooth,
-                                                        ));
+
+                                                    //TODO
+                                                    if (email != 'none' &&
+                                                        docId != 'none') {
+                                                      // ignore: use_build_context_synchronously
+                                                      navigateTo(
+                                                          context,
+                                                          NewScreen(
+                                                            email,
+                                                            docId,
+                                                            position:
+                                                                position_local,
+                                                            bluetooth:
+                                                                bluetooth,
+                                                          ));
+                                                    } else {
+                                                      // ignore: use_build_context_synchronously
+                                                      navigateTo(
+                                                          context,
+                                                          NewScreen(
+                                                            email,
+                                                            docId,
+                                                            position: position,
+                                                            bluetooth:
+                                                                bluetooth,
+                                                          ));
+                                                    }
                                                   } else {}
                                                 },
                                                 child: Column(

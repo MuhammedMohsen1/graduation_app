@@ -1,14 +1,26 @@
 import 'package:application_gp/components/navigator.dart';
+import 'package:application_gp/modules/add_new/Add_New.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:line_icons/line_icons.dart';
-
 import '../../Constants/constant.dart';
+import '../../components/bluetooth.dart';
+import '../add_new/bluetooth_on.dart';
 
-class OrderScreen extends StatelessWidget {
-  const OrderScreen({super.key, required this.isBoat});
+class OrderScreen extends StatefulWidget {
+  const OrderScreen({super.key, required this.isBoat, required this.data});
   final bool isBoat;
+  final List<Map<String, dynamic>> data;
+
+  @override
+  State<OrderScreen> createState() => _OrderScreenState(data);
+}
+
+class _OrderScreenState extends State<OrderScreen> {
+  final List<Map<String, dynamic>> data;
+
+  _OrderScreenState(this.data);
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -17,7 +29,7 @@ class OrderScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: background,
         title: Text(
-          isBoat ? 'BOATS' : 'TESTS',
+          widget.isBoat ? 'BOATS' : 'TESTS',
           style: TextStyle(
             fontSize: size.height * 0.025,
             color: textColor,
@@ -34,8 +46,8 @@ class OrderScreen extends StatelessWidget {
             )),
       ),
       body: ListView.builder(
-        physics: BouncingScrollPhysics(),
-        itemCount: 2,
+        physics: const BouncingScrollPhysics(),
+        itemCount: widget.data.length,
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
@@ -76,7 +88,7 @@ class OrderScreen extends StatelessWidget {
                                     urlTemplate:
                                         "https://api.tomtom.com/map/1/tile/basic/main/"
                                         "{z}/{x}/{y}.png?key={apiKey}",
-                                    additionalOptions: {"apiKey": apiKey},
+                                    additionalOptions: const {"apiKey": apiKey},
                                   ),
                                 ],
                               ),
@@ -122,7 +134,7 @@ class OrderScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if (isBoat) ...{
+                              if (widget.isBoat) ...{
                                 Text(
                                   'MOHSEN-1',
                                   style: TextStyle(
@@ -162,7 +174,7 @@ class OrderScreen extends StatelessWidget {
                                 ),
                               } else ...[
                                 Text(
-                                  'Mohamed Mohsen',
+                                  widget.data[index]['email'].toString(),
                                   style: TextStyle(
                                       color: textColor,
                                       fontSize: size.height * 0.018,
@@ -172,11 +184,12 @@ class OrderScreen extends StatelessWidget {
                                   height: 8.0,
                                 ),
                                 Text(
-                                  '01067042473',
+                                  '${DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(widget.data[index]['time'])).inHours} hours ago',
                                   style: TextStyle(
                                       color: textColor,
-                                      fontSize: size.height * 0.018,
-                                      letterSpacing: 1.5),
+                                      fontSize: size.height * 0.011,
+                                      fontWeight: FontWeight.w400,
+                                      letterSpacing: 1.0),
                                 ),
                               ]
                             ],
@@ -187,14 +200,6 @@ class OrderScreen extends StatelessWidget {
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
-                              Text(
-                                '2 days ago',
-                                style: TextStyle(
-                                    color: textColor,
-                                    fontSize: size.height * 0.011,
-                                    fontWeight: FontWeight.w400,
-                                    letterSpacing: 1.0),
-                              ),
                               const SizedBox(height: 2.0),
                               ElevatedButton(
                                 clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -204,7 +209,218 @@ class OrderScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(25),
                                   ),
                                 ),
-                                onPressed: () {},
+                                onPressed: () async {
+                                  var bluetooth = Bluetooth();
+
+                                  bool? isOn = await bluetooth.checkIsOn();
+                                  isOn ??= false;
+                                  if (!isOn) {
+                                    Position positionLocal = Position(
+                                        longitude: data[index]['gpsLong'],
+                                        latitude: data[index]['gpsLat'],
+                                        timestamp: DateTime.now(),
+                                        accuracy: 1,
+                                        altitude: 1,
+                                        heading: 1,
+                                        speed: 1,
+                                        speedAccuracy: 1);
+
+                                    navigateTo(
+                                        context,
+                                        BluetoothScreen(
+                                            docId: data[index]['id'],
+                                            email: data[index]['email'],
+                                            position_local: positionLocal));
+                                  }
+                                  bluetooth.scanDevices().then((value) {
+                                    setState(() {});
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return StatefulBuilder(
+                                          builder: (context, setState) {
+                                            return AlertDialog(
+                                              title: Row(
+                                                children: [
+                                                  Text(
+                                                    'Choose Device',
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          size.height * 0.020,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color: textColor,
+                                                    ),
+                                                  ),
+                                                  const Spacer(),
+                                                  IconButton(
+                                                    onPressed: () {
+                                                      setState(() {});
+                                                    },
+                                                    icon: const Icon(
+                                                      size: 18,
+                                                      Icons.refresh_rounded,
+                                                      color: textColor,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              content: SingleChildScrollView(
+                                                child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      ListView.builder(
+                                                        shrinkWrap: true,
+                                                        itemCount: bluetooth
+                                                            .devices.length,
+                                                        itemBuilder:
+                                                            (context, index1) =>
+                                                                Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Container(
+                                                            width:
+                                                                double.infinity,
+                                                            decoration:
+                                                                const BoxDecoration(
+                                                                    color:
+                                                                        background,
+                                                                    boxShadow: [
+                                                                  BoxShadow(
+                                                                    blurRadius:
+                                                                        5.0,
+                                                                    blurStyle:
+                                                                        BlurStyle
+                                                                            .outer,
+                                                                    color:
+                                                                        textColor,
+                                                                  ),
+                                                                ]),
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: InkWell(
+                                                                onTap:
+                                                                    () async {
+                                                                  bluetooth
+                                                                      .device = bluetooth
+                                                                          .devices[
+                                                                      index1];
+                                                                  int isConnected =
+                                                                      await bluetooth
+                                                                          .connectDevice();
+                                                                  if (isConnected ==
+                                                                      0) {
+                                                                    print(
+                                                                      data[index]
+                                                                          [
+                                                                          'gpsLat'],
+                                                                    );
+                                                                    print(
+                                                                      data[index]
+                                                                          [
+                                                                          'gpsLong'],
+                                                                    );
+                                                                    Position position = Position(
+                                                                        longitude: data[index]
+                                                                            [
+                                                                            'gpsLat'],
+                                                                        latitude:
+                                                                            data[index][
+                                                                                'gpsLong'],
+                                                                        timestamp:
+                                                                            DateTime
+                                                                                .now(),
+                                                                        accuracy:
+                                                                            1,
+                                                                        altitude:
+                                                                            1,
+                                                                        heading:
+                                                                            1,
+                                                                        speed:
+                                                                            1,
+                                                                        speedAccuracy:
+                                                                            1);
+                                                                    navigateTo(
+                                                                        context,
+                                                                        NewScreen(
+                                                                          data[index]
+                                                                              [
+                                                                              'email'],
+                                                                          data[index]
+                                                                              [
+                                                                              'id'],
+                                                                          position:
+                                                                              position,
+                                                                          bluetooth:
+                                                                              bluetooth,
+                                                                        ));
+
+                                                                    setState(
+                                                                        () {
+                                                                      data.removeAt(
+                                                                          index);
+                                                                    });
+                                                                  } else {}
+                                                                },
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                      bluetooth
+                                                                              .devices[index1]
+                                                                              .name ??
+                                                                          'Unknown Device',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            size.height *
+                                                                                0.017,
+                                                                        fontWeight:
+                                                                            FontWeight.w400,
+                                                                        color:
+                                                                            textColor,
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      bluetooth
+                                                                          .devices[
+                                                                              index1]
+                                                                          .address,
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            size.height *
+                                                                                0.017,
+                                                                        fontWeight:
+                                                                            FontWeight.w400,
+                                                                        color:
+                                                                            textColor,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ]),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    );
+                                  });
+
+                                  print(bluetooth.devices);
+                                },
                                 child: Text(
                                   'Accept',
                                   style: TextStyle(

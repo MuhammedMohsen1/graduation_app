@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' as intl;
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 
-import "package:http/http.dart" as http;
-import 'package:syncfusion_flutter_charts/charts.dart';
-import "dart:convert" as convert;
 import '../../Constants/constant.dart';
+import '../../Models/testData.dart';
 import '../../components/DetailsChar.dart';
 import '../../components/navigator.dart';
-import '../../layout/dashboard_layout.dart';
 
 class ViewDetails extends StatelessWidget {
-  const ViewDetails({super.key});
-
+  const ViewDetails(
+      {super.key, required this.test, required this.gps, required this.time});
+  final testData test;
+  final LatLng gps;
+  final DateTime time;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -78,14 +79,13 @@ class ViewDetails extends StatelessWidget {
                       IgnorePointer(
                         ignoring: true,
                         child: FlutterMap(
-                          options: MapOptions(
-                              center: LatLng(29.341089, 31.212216), zoom: 13.0),
+                          options: MapOptions(center: gps, zoom: 13.0),
                           children: [
                             TileLayer(
                               urlTemplate:
                                   "https://api.tomtom.com/map/1/tile/basic/main/"
                                   "{z}/{x}/{y}.png?key={apiKey}",
-                              additionalOptions: {"apiKey": apiKey},
+                              additionalOptions: const {"apiKey": apiKey},
                             ),
                           ],
                         ),
@@ -120,7 +120,7 @@ class ViewDetails extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      'MOHSEN-1',
+                      test.modelName,
                       style: TextStyle(
                         color: textColor,
                         fontWeight: FontWeight.w400,
@@ -172,7 +172,8 @@ class ViewDetails extends StatelessWidget {
                       width: 8,
                     ),
                     Text(
-                      '23/2/2023 - 8:56 PM',
+                      intl.DateFormat('yyyy-MM-dd – kk:mm')
+                          .format(time.toLocal()),
                       style: TextStyle(
                         color: textColor,
                         fontWeight: FontWeight.w400,
@@ -193,7 +194,7 @@ class ViewDetails extends StatelessWidget {
                     DetailsChar(
                       normal: 20,
                       range: 30,
-                      test_data: 8.5,
+                      test_data: test.TDS,
                       variable_name: "TDS",
                       size: size,
                     ),
@@ -203,7 +204,7 @@ class ViewDetails extends StatelessWidget {
                     DetailsChar(
                       normal: 7,
                       range: 14,
-                      test_data: 8.5,
+                      test_data: test.pH,
                       variable_name: "Ph",
                       size: size,
                     ),
@@ -213,7 +214,7 @@ class ViewDetails extends StatelessWidget {
                     DetailsChar(
                       normal: 14,
                       range: 20,
-                      test_data: 6.5,
+                      test_data: test.turbidity,
                       variable_name: "Turbidly",
                       size: size,
                     ),
@@ -223,7 +224,7 @@ class ViewDetails extends StatelessWidget {
                     DetailsChar(
                       normal: 32,
                       range: 40,
-                      test_data: 12,
+                      test_data: test.Temperature,
                       variable_name: "Temperature",
                       size: size,
                     ),

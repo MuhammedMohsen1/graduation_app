@@ -4,16 +4,47 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../components/navigator.dart';
+import '../../../components/position.dart';
+import '../../../components/updatingData.dart';
 import '../../../layout/dashboard_layout.dart';
 import '../../view_details/view_details.dart';
 import '../../view_more/view_more.dart';
 import '../../welcome_screen/welcome_screen.dart';
 import '../Customer_Dashboard.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
   });
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List<Map<String, dynamic>> data = [];
+  Map<String, dynamic> nearest_test = {};
+  GetPosition? position;
+
+  @override
+  void initState() {
+    get();
+    super.initState();
+  }
+
+  Future<void> get() async {
+    print('start');
+    fetchTestsFromFirestore().then((value) {
+      setState(() {
+        data = value;
+        print(data);
+        GetPosition.handleLocationPermission(context);
+        position = GetPosition(true);
+        nearest_test = findNearestLocation(
+            position!.get().latitude, position!.get().longitude, data);
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +194,11 @@ class HomeScreen extends StatelessWidget {
               const Spacer(),
               GestureDetector(
                 onTap: () {
-                  navigateTo(context, ViewMore());
+                  navigateTo(
+                      context,
+                      ViewMore(
+                        data: data,
+                      ));
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -185,7 +220,7 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Icon(
+                      const Icon(
                         Icons.chevron_right_rounded,
                         color: textColor,
                         size: 20,
@@ -197,118 +232,251 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            clipBehavior: Clip.antiAliasWithSaveLayer,
-            height: size.height / 4,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
-                  BoxShadow(
-                      color: textColor,
-                      blurRadius: 5,
-                      blurStyle: BlurStyle.outer,
-                      spreadRadius: 1),
-                ]),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                IgnorePointer(
-                  ignoring: true,
-                  child: FlutterMap(
-                    options: MapOptions(
-                        center: LatLng(29.341089, 31.212216), zoom: 13.0),
+        if (nearest_test.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              height: size.height / 4,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [
+                    BoxShadow(
+                        color: textColor,
+                        blurRadius: 5,
+                        blurStyle: BlurStyle.outer,
+                        spreadRadius: 1),
+                  ]),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  IgnorePointer(
+                    ignoring: true,
+                    child: FlutterMap(
+                      options: MapOptions(
+                          center: LatLng(
+                              nearest_test['gpsLat'], nearest_test['gpsLong']),
+                          zoom: 13.0),
+                      children: [
+                        TileLayer(
+                          urlTemplate:
+                              "https://api.tomtom.com/map/1/tile/basic/main/"
+                              "{z}/{x}/{y}.png?key={apiKey}",
+                          additionalOptions: const {"apiKey": apiKey},
+                        ),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      TileLayer(
-                        urlTemplate:
-                            "https://api.tomtom.com/map/1/tile/basic/main/"
-                            "{z}/{x}/{y}.png?key={apiKey}",
-                        additionalOptions: {"apiKey": apiKey},
+                      const Icon(Icons.location_on,
+                          size: 25.0, color: textColor),
+                      const SizedBox(
+                        height: 2.0,
+                      ),
+                      Text(
+                        "Test's here",
+                        style: TextStyle(
+                            fontSize: size.height * 0.014,
+                            letterSpacing: 1,
+                            color: textColor,
+                            fontWeight: FontWeight.w500),
                       ),
                     ],
-                  ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.location_on, size: 25.0, color: textColor),
-                    const SizedBox(
-                      height: 2.0,
-                    ),
-                    Text(
-                      "Test's here",
-                      style: TextStyle(
-                          fontSize: size.height * 0.014,
-                          letterSpacing: 1,
-                          color: textColor,
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ),
-        ),
-        Row(
-          children: [
-            CircularWidget(
-              size: size,
-              data: [ChartData('normal', 7), ChartData('test', 2.45)],
-              maximum: 14,
-              title: 'pH',
-            ),
-            CircularWidget(
-              size: size,
-              data: [ChartData('normal', 2.5), ChartData('test', 7)],
-              maximum: 20,
-              title: 'Turbidity',
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            CircularWidget(
-              size: size,
-              data: [ChartData('normal', 300), ChartData('test', 500)],
-              maximum: 600,
-              title: 'TDS',
-            ),
-            CircularWidget(
-              size: size,
-              data: [ChartData('normal', 2.5), ChartData('test', 1)],
-              maximum: 3,
-              title: 'Temperature',
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 16,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
+          Row(
             children: [
-              SmallDataChar(
+              CircularWidget(
                 size: size,
-                classification: "Normal",
-                icon: Icons.electric_bolt_outlined,
-                name: "Conductivity",
+                data: [
+                  ChartData('normal', 7),
+                  ChartData('test', nearest_test['ph'])
+                ],
+                maximum: 14,
+                title: 'pH',
               ),
-              const SizedBox(
-                width: 16.0,
-              ),
-              SmallDataChar(
+              CircularWidget(
                 size: size,
-                classification: "Fine",
-                name: "Oxygen",
+                data: [
+                  ChartData('normal', 2.5),
+                  ChartData('test', nearest_test['turbidity'])
+                ],
+                maximum: 20,
+                title: 'Turbidity',
               ),
             ],
           ),
-        ),
-        SizedBox(
-          height: size.height / 10,
-        ),
+          Row(
+            children: [
+              CircularWidget(
+                size: size,
+                data: [
+                  ChartData('normal', 300),
+                  ChartData('test', nearest_test['tds'])
+                ],
+                maximum: 600,
+                title: 'TDS',
+              ),
+              CircularWidget(
+                size: size,
+                data: [
+                  ChartData('normal', 2.5),
+                  ChartData('test', nearest_test['temperature'])
+                ],
+                maximum: 3,
+                title: 'Temperature',
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                SmallDataChar(
+                  size: size,
+                  classification:
+                      nearest_test['temperature'] == 0 ? "Normal" : "Danger",
+                  icon: Icons.electric_bolt_outlined,
+                  name: "Conductivity",
+                ),
+                const SizedBox(
+                  width: 16.0,
+                ),
+                SmallDataChar(
+                  size: size,
+                  classification:
+                      nearest_test['temperature'] == 0 ? "Fine" : "Danger",
+                  name: "Oxygen",
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: size.height / 10,
+          ),
+        ] else ...[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              height: size.height / 4,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [
+                    BoxShadow(
+                        color: textColor,
+                        blurRadius: 5,
+                        blurStyle: BlurStyle.outer,
+                        spreadRadius: 1),
+                  ]),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  IgnorePointer(
+                    ignoring: true,
+                    child: FlutterMap(
+                      options: MapOptions(
+                          center: LatLng(29.5689, 31.23445), zoom: 13.0),
+                      children: [
+                        TileLayer(
+                          urlTemplate:
+                              "https://api.tomtom.com/map/1/tile/basic/main/"
+                              "{z}/{x}/{y}.png?key={apiKey}",
+                          additionalOptions: const {"apiKey": apiKey},
+                        ),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.location_on,
+                          size: 25.0, color: textColor),
+                      const SizedBox(
+                        height: 2.0,
+                      ),
+                      Text(
+                        "Test's here",
+                        style: TextStyle(
+                            fontSize: size.height * 0.014,
+                            letterSpacing: 1,
+                            color: textColor,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
+          Row(
+            children: [
+              CircularWidget(
+                size: size,
+                data: [ChartData('normal', 7), ChartData('test', 7)],
+                maximum: 14,
+                title: 'pH',
+              ),
+              CircularWidget(
+                size: size,
+                data: [ChartData('normal', 2.5), ChartData('test', 15)],
+                maximum: 20,
+                title: 'Turbidity',
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              CircularWidget(
+                size: size,
+                data: [ChartData('normal', 300), ChartData('test', 400)],
+                maximum: 600,
+                title: 'TDS',
+              ),
+              CircularWidget(
+                size: size,
+                data: [ChartData('normal', 2.5), ChartData('test', 1)],
+                maximum: 3,
+                title: 'Temperature',
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                SmallDataChar(
+                  size: size,
+                  classification: "Normal",
+                  icon: Icons.electric_bolt_outlined,
+                  name: "Conductivity",
+                ),
+                const SizedBox(
+                  width: 16.0,
+                ),
+                SmallDataChar(
+                  size: size,
+                  classification: "Fine",
+                  name: "Oxygen",
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: size.height / 10,
+          ),
+        ],
       ],
     );
   }

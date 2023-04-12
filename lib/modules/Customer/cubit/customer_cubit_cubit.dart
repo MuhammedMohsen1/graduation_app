@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:meta/meta.dart';
 
 import '../../../components/position.dart';
+import '../../../components/updatingData.dart';
 import '../Screens/AddScreen.dart';
 
 part 'customer_cubit_state.dart';
@@ -17,6 +18,9 @@ class CustomerCubitCubit extends Cubit<CustomerCubitState> {
   CustomerCubitCubit() : super(CustomerCubitInitial());
   static CustomerCubitCubit get(BuildContext context) =>
       BlocProvider.of(context);
+
+  List<Map<String, dynamic>> data = [];
+  Map<String, dynamic> nearest_test = {};
 
   List<Widget> screens = [
     HomeScreen(),
@@ -33,5 +37,16 @@ class CustomerCubitCubit extends Cubit<CustomerCubitState> {
     this.screenIndex = screenIndex;
 
     emit(CustomerCubitChangeScreenState());
+  }
+
+  Future<void> fetchData() async {
+    fetchTestsFromFirestore().then((value) {
+      data = value;
+
+      nearest_test =
+          findNearestLocation(position.latitude, position.longitude, data);
+
+      print('done fetching data');
+    });
   }
 }

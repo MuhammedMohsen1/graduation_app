@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import '../../components/record_item.dart';
 
 class ViewMore extends StatelessWidget {
-  const ViewMore({super.key});
+  const ViewMore({super.key, required this.data});
+  final List<Map<String, dynamic>> data;
 
   @override
   Widget build(BuildContext context) {
+    print(data);
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -33,8 +35,9 @@ class ViewMore extends StatelessWidget {
       ),
       body: ListView.builder(
         physics: const BouncingScrollPhysics(),
-        itemCount: 20,
-        itemBuilder: (context, index) => RecordItem(size: size, isClean: false),
+        itemCount: data.length,
+        itemBuilder: (context, index) =>
+            RecordItem(size: size, data: data[index]),
       ),
     );
   }

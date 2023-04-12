@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:application_gp/components/GetData.dart';
 import 'package:application_gp/components/functions.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
 class Bluetooth {
   BluetoothConnection? connection;
   List<BluetoothDevice> devices = [];
-  String? information;
+  final information = ['', ''];
   BluetoothDevice? device;
   Future<void> scanDevices() async {
     try {
@@ -58,12 +59,21 @@ class Bluetooth {
     await FlutterBluetoothSerial.instance.requestEnable();
   }
 
-  readData() {
+  void readData() {
+    information.add('');
     connection?.input?.listen((Uint8List data) {
-      print('Data incoming: ${ascii.decode(data)}');
+      String asci = ascii.decode(data).toString().replaceAll('null', '');
 
-      information = '$information${ascii.decode(data).toString()}';
-      print(information);
+      information.add(asci);
+
+      if (asci.contains(';')) {
+        Getting_data.getData(information);
+        information.clear();
+      }
     });
+  }
+
+  void close_connection() {
+    connection?.dispose();
   }
 }

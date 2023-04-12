@@ -2,17 +2,16 @@ import 'package:application_gp/Constants/constant.dart';
 import 'package:application_gp/components/navigator.dart';
 import 'package:application_gp/modules/Customer/cubit/customer_cubit_cubit.dart';
 import 'package:application_gp/modules/view_details/view_details.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:geolocator/geolocator.dart';
+
+import '../../../components/GetData.dart';
+import '../../../components/updatingData.dart';
 
 class AddScreen extends StatefulWidget {
-  AddScreen({
+  const AddScreen({
     super.key,
   });
 
@@ -29,6 +28,7 @@ class _AddScreenState extends State<AddScreen>
   bool isIgnored = false;
   bool isChosen = false;
   double percentage = 0;
+  List<Map<String, dynamic>> list = [];
   @override
   void initState() {
     pleaseController = AnimationController(
@@ -86,7 +86,7 @@ class _AddScreenState extends State<AddScreen>
                           urlTemplate:
                               "https://api.tomtom.com/map/1/tile/basic/main/"
                               "{z}/{x}/{y}.png?key={apiKey}",
-                          additionalOptions: {"apiKey": apiKey},
+                          additionalOptions: const {"apiKey": apiKey},
                         ),
                       ],
                     ),
@@ -226,6 +226,18 @@ class _AddScreenState extends State<AddScreen>
                               : Alignment.bottomCenter,
                           child: InkWell(
                             onTap: () {
+                              String? email =
+                                  FirebaseAuth.instance.currentUser?.email;
+                              addTestOrdersToFirestore(
+                                email!,
+                                DateTime.now().millisecondsSinceEpoch,
+                                mapcontroller.center.latitude,
+                                mapcontroller.center.longitude,
+                              ).then((value) async {
+                                list = await fetchTestOrdersFromFirestore();
+                                setState(() {});
+                              });
+                              // TODO
                               print(mapcontroller.center);
                               setState(() {
                                 isChosen = true;
@@ -307,7 +319,7 @@ class _AddScreenState extends State<AddScreen>
             padding: const EdgeInsets.all(8.0),
             child: ListView(
               shrinkWrap: true,
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -320,15 +332,18 @@ class _AddScreenState extends State<AddScreen>
                     ),
                   ),
                 ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: 8,
-                  physics: const BouncingScrollPhysics(),
-                  itemBuilder: (context, index) => AllTests(
-                    size: size,
-                    id: index + 1,
-                    result: 'Polluted Water',
-                    status: 'Done',
+                SizedBox(
+                  height: size.height * 0.9,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: list.length,
+                    physics: const BouncingScrollPhysics(),
+                    itemBuilder: (context, index) => AllTests(
+                      size: size,
+                      id: index + 1,
+                      result: list[index]['result'],
+                      status: list[index]['status'],
+                    ),
                   ),
                 ),
               ],
@@ -341,12 +356,14 @@ class _AddScreenState extends State<AddScreen>
             padding:
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
             child: ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 isChosen = !isChosen;
+                list = await fetchTestOrdersFromFirestore();
+
                 setState(() {});
               },
               style: ButtonStyle(
-                animationDuration: Duration(milliseconds: 600),
+                animationDuration: const Duration(milliseconds: 600),
                 backgroundColor:
                     MaterialStateColor.resolveWith((states) => background),
               ),
@@ -391,7 +408,13 @@ class AllTests extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () {
-          navigateTo(context, ViewDetails());
+          navigateTo(
+              context,
+              ViewDetails(
+                gps: LatLng(29.2651, 31.2658),
+                test: Getting_data.test,
+                time: DateTime.now(),
+              ));
         },
         child: Container(
           clipBehavior: Clip.antiAliasWithSaveLayer,

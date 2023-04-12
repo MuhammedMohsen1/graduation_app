@@ -1,7 +1,7 @@
 import 'package:application_gp/Constants/constant.dart';
-import 'package:application_gp/components/functions.dart';
 import 'package:application_gp/components/navigator.dart';
 import 'package:application_gp/components/position.dart';
+import 'package:application_gp/components/updatingData.dart';
 import 'package:application_gp/modules/add_new/bluetooth_on.dart';
 import 'package:application_gp/modules/login_screen/Sign_Up.dart';
 import 'package:application_gp/modules/welcome_screen/welcome_screen.dart';
@@ -11,7 +11,6 @@ import 'package:geolocator_platform_interface/src/models/position.dart'
 import 'package:line_icons/line_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:flutter_blue/flutter_blue.dart';
 import '../components/bluetooth.dart';
 import '../components/view_more_button.dart';
 import '../modules/Orders/Orders.dart';
@@ -26,8 +25,52 @@ class DashboardLayout extends StatefulWidget {
 }
 
 class _DashboardLayoutState extends State<DashboardLayout> {
+  List<Map<String, dynamic>> data = [];
+  int pollutedWater = 0;
+  List<Map<String, dynamic>> testorders = [];
+  @override
+  void initState() {
+    // TODO: implement initState
+    get();
+
+    super.initState();
+  }
+
+  Future<void> get() async {
+    pollutedWater = 0;
+    fetchTestsFromFirestore().then((value) {
+      setState(() {
+        data = value;
+      });
+      for (var element in data) {
+        if (element['polluted'] == 0) {
+          pollutedWater++;
+        }
+        setState(() {});
+      }
+      print('done fetching data');
+    });
+    fetchTestOrdersFromFirestore().then((value) {
+      print(value);
+      value.removeWhere((element) {
+        print(element['status']);
+        if (element['status'] != 'waiting...') {
+          return true;
+        }
+        return false;
+      });
+      print(value);
+      setState(() {
+        testorders = value;
+      });
+      print('done fetching Test Orders');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(data);
+
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -137,14 +180,28 @@ class _DashboardLayoutState extends State<DashboardLayout> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: Text(
-                  'Dashboard',
-                  style: TextStyle(
-                    color: textColor,
-                    fontWeight: FontWeight.w300,
-                    fontSize: size.height * 0.06,
-                    letterSpacing: 1,
-                  ),
+                child: Row(
+                  children: [
+                    Text(
+                      'Dashboard',
+                      style: TextStyle(
+                        color: textColor,
+                        fontWeight: FontWeight.w300,
+                        fontSize: size.height * 0.06,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                        onPressed: get,
+                        icon: const Icon(
+                          Icons.refresh_rounded,
+                          color: textColor,
+                        )),
+                    const SizedBox(
+                      width: 5.0,
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(
@@ -198,7 +255,7 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                     height: 8,
                                   ),
                                   Text(
-                                    '125,67K',
+                                    data.length.toString(),
                                     style: TextStyle(
                                       color: textColor,
                                       fontWeight: FontWeight.w300,
@@ -213,8 +270,8 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                     width: size.width / 2.8,
                                     child: ViewMoreButton(
                                       size: size,
-                                      title: 'View All',
-                                      screen: const ViewMore(),
+                                      title: 'View more',
+                                      screen: ViewMore(data: data),
                                       color: backgroundBtn,
                                     ),
                                   ),
@@ -252,10 +309,10 @@ class _DashboardLayoutState extends State<DashboardLayout> {
 
                                           bool? isOn =
                                               await bluetooth.checkIsOn();
-                                          if (isOn == null) isOn = false;
+                                          isOn ??= false;
                                           if (!isOn) {
-                                            navigateTo(context,
-                                                const BluetoothScreen());
+                                            navigateTo(
+                                                context, BluetoothScreen());
                                           }
                                           bluetooth.scanDevices().then((value) {
                                             setState(() {});
@@ -279,12 +336,12 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                                               color: textColor,
                                                             ),
                                                           ),
-                                                          Spacer(),
+                                                          const Spacer(),
                                                           IconButton(
                                                             onPressed: () {
                                                               setState(() {});
                                                             },
-                                                            icon: Icon(
+                                                            icon: const Icon(
                                                               size: 18,
                                                               Icons
                                                                   .refresh_rounded,
@@ -355,6 +412,8 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                                                             navigateTo(
                                                                                 context,
                                                                                 NewScreen(
+                                                                                  'none',
+                                                                                  'none',
                                                                                   position: position,
                                                                                   bluetooth: bluetooth,
                                                                                 ));
@@ -402,13 +461,13 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                           // ignore: use_build_context_synchronously
                                           // ignore: use_build_context_synchronously
                                           /* 
-
+              
                                             var bluetooth = Bluetooth();
                                           await bluetooth.scanDevices();
-
-
-
-
+              
+              
+              
+              
                                               bluetooth.device =
                                               bluetooth.devices.first;
                                           await bluetooth.connectDevice();
@@ -422,7 +481,7 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                             GetPosition
                                                 .handleLocationPermission(
                                                     context);
-
+              
                                             positioned.Position position =
                                                 GetPosition(true).get();
                                             navigateTo(
@@ -483,7 +542,7 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                           ),
                                         ),
                                         Text(
-                                          '12 place',
+                                          '$pollutedWater place',
                                           style: TextStyle(
                                             color: textColor,
                                             fontWeight: FontWeight.w300,
@@ -537,7 +596,7 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                     radius: '70%',
                                   ),
                                 ],
-                                palette: [background, background_dark],
+                                palette: const [background, background_dark],
                               ),
                             ),
                             SizedBox(
@@ -680,10 +739,17 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                       ),
                                     ),
                                     onPressed: () {
+                                      for (var element in data) {
+                                        if (element['status'] != 'none') {
+                                          data.remove(element);
+                                          print(' i am removed');
+                                        }
+                                      }
                                       navigateTo(
                                           context,
-                                          const OrderScreen(
+                                          OrderScreen(
                                             isBoat: true,
+                                            data: data,
                                           ));
                                     },
                                     child: Row(
@@ -692,10 +758,9 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                       children: [
                                         Stack(
                                           children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(4.0),
-                                              child: const Icon(
+                                            const Padding(
+                                              padding: EdgeInsets.all(4.0),
+                                              child: Icon(
                                                 LineIcons.ship,
                                                 color: textColor,
                                               ),
@@ -761,8 +826,9 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                     onPressed: () {
                                       navigateTo(
                                           context,
-                                          const OrderScreen(
+                                          OrderScreen(
                                             isBoat: false,
+                                            data: testorders,
                                           ));
                                     },
                                     child: Row(
@@ -772,10 +838,9 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                         Stack(
                                           alignment: Alignment.center,
                                           children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(4.0),
-                                              child: const Icon(
+                                            const Padding(
+                                              padding: EdgeInsets.all(4.0),
+                                              child: Icon(
                                                 LineIcons.clipboardList,
                                                 color: textColor,
                                               ),
@@ -791,7 +856,8 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                                     shape: BoxShape.circle),
                                                 child: Center(
                                                   child: Text(
-                                                    '99',
+                                                    testorders.length
+                                                        .toString(),
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize:

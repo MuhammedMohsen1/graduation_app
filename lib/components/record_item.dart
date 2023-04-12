@@ -1,19 +1,34 @@
+import 'package:application_gp/Models/testData.dart';
 import 'package:application_gp/components/view_more_button.dart';
 import 'package:flutter/material.dart';
-
+import 'package:latlong2/latlong.dart';
 import '../Constants/constant.dart';
 import '../modules/view_details/view_details.dart';
-import '../modules/view_more/view_more.dart';
+import 'package:intl/intl.dart' as intl;
 
 class RecordItem extends StatelessWidget {
-  const RecordItem({
+  final Map<String, dynamic> data;
+  final Size size;
+  late final testData test;
+
+  RecordItem({
     super.key,
     required this.size,
-    required this.isClean,
-  });
+    required this.data,
+  }) {
+    test = testData(
+      TDS: data['tds'],
+      Temperature: data['temperature'],
+      errorCode: 0,
+      gps_lat: data['gpsLat'],
+      gps_long: data['gpsLong'],
+      modelName: data['name'],
+      pH: data['ph'],
+      status: 3,
+      turbidity: data['turbidity'],
+    );
+  }
 
-  final Size size;
-  final bool isClean;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -43,7 +58,7 @@ class RecordItem extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          'MOHSEN-1',
+                          data['name'],
                           overflow: TextOverflow.clip,
                           style: TextStyle(
                             color: textColor,
@@ -55,7 +70,9 @@ class RecordItem extends StatelessWidget {
                       ),
                       Expanded(
                         child: Text(
-                          '22/2/2023',
+                          intl.DateFormat('yyyy-MM-dd').format(
+                              DateTime.fromMillisecondsSinceEpoch(
+                                  data['time'])),
                           overflow: TextOverflow.clip,
                           style: TextStyle(
                             color: textColor,
@@ -77,7 +94,7 @@ class RecordItem extends StatelessWidget {
                       decoration: BoxDecoration(
                         border: Border.all(
                             width: 1,
-                            color: isClean
+                            color: data['polluted'] == 1
                                 ? textColor.withOpacity(0.6)
                                 : Colors.redAccent),
                         color: background.withOpacity(.07),
@@ -88,7 +105,7 @@ class RecordItem extends StatelessWidget {
                           vertical: 10,
                           horizontal: 8,
                         ),
-                        child: isClean
+                        child: data['polluted'] == 1
                             ? Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
@@ -135,7 +152,11 @@ class RecordItem extends StatelessWidget {
                   ViewMoreButton(
                     size: size,
                     title: "more details",
-                    screen: const ViewDetails(),
+                    screen: ViewDetails(
+                      gps: LatLng(data['gpsLat'], data['gpsLong']),
+                      test: test,
+                      time: DateTime.fromMillisecondsSinceEpoch(data['time']),
+                    ),
                   ),
                 ],
               ),
