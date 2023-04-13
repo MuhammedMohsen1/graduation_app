@@ -6,7 +6,7 @@ Future<SharedPreferences> get_data(
   String title,
 ) async {
   SharedPreferences pref = await SharedPreferences.getInstance();
-  return await pref;
+  return pref;
 }
 
 void store_data(String title, dynamic data, types type) async {

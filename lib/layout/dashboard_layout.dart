@@ -28,6 +28,8 @@ class _DashboardLayoutState extends State<DashboardLayout> {
   List<Map<String, dynamic>> data = [];
   int pollutedWater = 0;
   List<Map<String, dynamic>> testorders = [];
+  List<Map<String, dynamic>> boatorders = [];
+  double percentage = 0;
   @override
   void initState() {
     // TODO: implement initState
@@ -45,11 +47,20 @@ class _DashboardLayoutState extends State<DashboardLayout> {
       for (var element in data) {
         if (element['polluted'] == 0) {
           pollutedWater++;
+          percentage = (pollutedWater / data.length) * 100;
+          setState(() {});
         }
-        setState(() {});
       }
+
       print('done fetching data');
     });
+    fetchBoatOrdersFromFirestore().then((value) {
+      setState(() {
+        boatorders = value;
+      });
+      print('done fetching Test Orders');
+    });
+
     fetchTestOrdersFromFirestore().then((value) {
       print(value);
       value.removeWhere((element) {
@@ -409,6 +420,7 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                                                             positioned.Position
                                                                                 position =
                                                                                 GetPosition(true).get();
+
                                                                             navigateTo(
                                                                                 context,
                                                                                 NewScreen(
@@ -457,43 +469,6 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                           });
 
                                           print(bluetooth.devices);
-
-                                          // ignore: use_build_context_synchronously
-                                          // ignore: use_build_context_synchronously
-                                          /* 
-              
-                                            var bluetooth = Bluetooth();
-                                          await bluetooth.scanDevices();
-              
-              
-              
-              
-                                              bluetooth.device =
-                                              bluetooth.devices.first;
-                                          await bluetooth.connectDevice();
-                                          bluetooth.readData();
-                                          
-                                           FlutterBlue flutterBlue =
-                                              FlutterBlue.instance;
-                                          // Start scanning
-                                          bool isOn = await flutterBlue.isOn;
-                                          if (isOn) {
-                                            GetPosition
-                                                .handleLocationPermission(
-                                                    context);
-              
-                                            positioned.Position position =
-                                                GetPosition(true).get();
-                                            navigateTo(
-                                                context,
-                                                NewScreen(
-                                                  position: position,
-                                                ));
-                                          } else {
-                                            navigateTo(context,
-                                                const BluetoothScreen());
-                                          }
-                                          */
                                         },
                                         child: Row(
                                           mainAxisAlignment:
@@ -585,9 +560,10 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                   PieSeries<ChartData, String>(
                                     enableTooltip: true,
                                     dataSource: [
-                                      ChartData('polluted', 19.35, background),
                                       ChartData(
-                                          'clean', 80.65, background_dark),
+                                          'polluted', percentage, background),
+                                      ChartData('clean', (100 - percentage),
+                                          background_dark),
                                     ],
                                     xValueMapper: (ChartData data, _) => data.x,
                                     yValueMapper: (ChartData data, _) => data.y,
@@ -622,7 +598,7 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                           ),
                                         ),
                                         Text(
-                                          '%80.65',
+                                          '%${100 - percentage}',
                                           style: TextStyle(
                                             color: textColor,
                                             fontWeight: FontWeight.w300,
@@ -654,7 +630,7 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                           ),
                                         ),
                                         Text(
-                                          '%19.35',
+                                          '%$percentage',
                                           style: TextStyle(
                                             color: textColor,
                                             fontWeight: FontWeight.w300,
@@ -739,17 +715,11 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                       ),
                                     ),
                                     onPressed: () {
-                                      for (var element in data) {
-                                        if (element['status'] != 'none') {
-                                          data.remove(element);
-                                          print(' i am removed');
-                                        }
-                                      }
                                       navigateTo(
                                           context,
                                           OrderScreen(
                                             isBoat: true,
-                                            data: data,
+                                            data: boatorders,
                                           ));
                                     },
                                     child: Row(
@@ -776,7 +746,8 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                                     shape: BoxShape.circle),
                                                 child: Center(
                                                   child: Text(
-                                                    '99',
+                                                    boatorders.length
+                                                        .toString(),
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize:

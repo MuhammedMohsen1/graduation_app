@@ -1,13 +1,23 @@
+import 'package:application_gp/components/functions.dart';
 import 'package:application_gp/components/navigator.dart';
-import 'package:application_gp/components/rounded_input.dart';
+import 'package:application_gp/components/updatingData.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:line_icons/line_icons.dart';
 
 import '../../Constants/constant.dart';
+import '../../components/position.dart';
+import '../../components/sharedPreference.dart';
 
 class Payment extends StatelessWidget {
-  Payment({super.key, required this.price});
+  Payment(
+      {super.key,
+      required this.price,
+      required this.isShip,
+      required this.data});
   final double price;
+  final bool isShip;
+  final Map<String, dynamic> data;
   var idController = TextEditingController();
   var expDateController = TextEditingController();
   var cvvController = TextEditingController();
@@ -162,7 +172,46 @@ class Payment extends StatelessWidget {
                           height: 8.0,
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            if (idController.text.isEmpty ||
+                                expDateController.text.isEmpty ||
+                                cvvController.text.isEmpty) {
+                              showToast('it seems some information is missing',
+                                  TOAST_STATUS.TOAST_FAILED);
+                            } else {
+                              if (isShip) {
+                                GetPosition.handleLocationPermission(context);
+
+                                Position position = GetPosition(true).get();
+                                addBoatOrderToFirestore(
+                                    data['name'],
+                                    data['owner'],
+                                    DateTime.now().millisecondsSinceEpoch,
+                                    position.latitude,
+                                    position.longitude,
+                                    price,
+                                    data['battery'],
+                                    data['version']);
+                                showToast(
+                                    'Congratulations! Your request has been successfully submitted. Our company will contact you ',
+                                    TOAST_STATUS.TOAST_SUCCESS);
+                              } else {
+                                store_data(
+                                    'package', data['package'], types.STRING);
+                                store_data('price', price, types.DOUBLE);
+                                store_data(
+                                    'date',
+                                    DateTime.now()
+                                        .add(const Duration(days: 30))
+                                        .millisecondsSinceEpoch,
+                                    types.INT);
+                                showToast(
+                                    'Your plan has been changed successfully ',
+                                    TOAST_STATUS.TOAST_SUCCESS);
+                              }
+                              navigateBack(context);
+                            }
+                          },
                           style: ButtonStyle(
                             shape: MaterialStateProperty.all<
                                 RoundedRectangleBorder>(RoundedRectangleBorder(

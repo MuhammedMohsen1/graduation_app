@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:application_gp/components/GetData.dart';
 import 'package:application_gp/components/functions.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+
+import 'GetData.dart';
 
 class Bluetooth {
   BluetoothConnection? connection;
@@ -17,10 +18,8 @@ class Bluetooth {
       await FlutterBluetoothSerial.instance.cancelDiscovery();
       FlutterBluetoothSerial.instance.startDiscovery().forEach((element) {
         devices.add(element.device);
-      }).whenComplete(() {
-        print('Completed');
-      });
-      await Future.delayed(Duration(seconds: 3));
+      }).whenComplete(() {});
+      await Future.delayed(const Duration(seconds: 3));
 
       /* FlutterBluetoothSerial.instance.getBondedDevices().then((value) {
         devices = value;
@@ -60,17 +59,30 @@ class Bluetooth {
   }
 
   void readData() {
+    print('start reading');
     information.add('');
     connection?.input?.listen((Uint8List data) {
       String asci = ascii.decode(data).toString().replaceAll('null', '');
 
       information.add(asci);
-
+      print(information);
       if (asci.contains(';')) {
+        print('The Whole statement');
+        print(information);
         Getting_data.getData(information);
         information.clear();
       }
     });
+  }
+
+  void sendData(String data) async {
+    Uint8List localData = ascii.encode(data);
+    connection?.output.add(localData);
+
+    var result = await connection?.output.allSent;
+
+    print(result);
+    print('Sent Successfully');
   }
 
   void close_connection() {

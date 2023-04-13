@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import '../../Constants/constant.dart';
 import '../../components/bluetooth.dart';
+import '../../components/updatingData.dart';
 import '../add_new/bluetooth_on.dart';
 
 class OrderScreen extends StatefulWidget {
@@ -136,7 +137,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             children: [
                               if (widget.isBoat) ...{
                                 Text(
-                                  'MOHSEN-1',
+                                  data[index]['name'],
                                   style: TextStyle(
                                       color: textColor,
                                       fontSize: size.height * 0.018,
@@ -146,7 +147,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                   height: 8.0,
                                 ),
                                 Text(
-                                  'Version v1.0.0',
+                                  'Version ${data[index]['version']}',
                                   style: TextStyle(
                                       color: textColor,
                                       fontSize: size.height * 0.018,
@@ -156,7 +157,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                   height: 8.0,
                                 ),
                                 Text(
-                                  'A1976C2023',
+                                  data[index]['owner'],
                                   style: TextStyle(
                                       color: textColor,
                                       fontSize: size.height * 0.018,
@@ -166,7 +167,17 @@ class _OrderScreenState extends State<OrderScreen> {
                                   height: 8.0,
                                 ),
                                 Text(
-                                  'Price: 8999.99 LE',
+                                  'Battery: ${data[index]['battery'].toString()}hrs',
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: size.height * 0.018,
+                                      letterSpacing: 1.5),
+                                ),
+                                const SizedBox(
+                                  height: 8.0,
+                                ),
+                                Text(
+                                  'Price: ${data[index]['price']} LE',
                                   style: TextStyle(
                                       color: textColor,
                                       fontSize: size.height * 0.018,
@@ -200,6 +211,16 @@ class _OrderScreenState extends State<OrderScreen> {
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
+                              if (widget.isBoat) ...[
+                                Text(
+                                  '${DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(widget.data[index]['time'])).inHours} hours ago',
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: size.height * 0.011,
+                                      fontWeight: FontWeight.w400,
+                                      letterSpacing: 1.0),
+                                ),
+                              ],
                               const SizedBox(height: 2.0),
                               ElevatedButton(
                                 clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -210,216 +231,220 @@ class _OrderScreenState extends State<OrderScreen> {
                                   ),
                                 ),
                                 onPressed: () async {
-                                  var bluetooth = Bluetooth();
+                                  if (!widget.isBoat) {
+                                    var bluetooth = Bluetooth();
 
-                                  bool? isOn = await bluetooth.checkIsOn();
-                                  isOn ??= false;
-                                  if (!isOn) {
-                                    Position positionLocal = Position(
-                                        longitude: data[index]['gpsLong'],
-                                        latitude: data[index]['gpsLat'],
-                                        timestamp: DateTime.now(),
-                                        accuracy: 1,
-                                        altitude: 1,
-                                        heading: 1,
-                                        speed: 1,
-                                        speedAccuracy: 1);
+                                    bool? isOn = await bluetooth.checkIsOn();
+                                    isOn ??= false;
+                                    if (!isOn) {
+                                      Position positionLocal = Position(
+                                          longitude: data[index]['gpsLong'],
+                                          latitude: data[index]['gpsLat'],
+                                          timestamp: DateTime.now(),
+                                          accuracy: 1,
+                                          altitude: 1,
+                                          heading: 1,
+                                          speed: 1,
+                                          speedAccuracy: 1);
 
-                                    navigateTo(
-                                        context,
-                                        BluetoothScreen(
-                                            docId: data[index]['id'],
-                                            email: data[index]['email'],
-                                            position_local: positionLocal));
-                                  }
-                                  bluetooth.scanDevices().then((value) {
-                                    setState(() {});
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return StatefulBuilder(
-                                          builder: (context, setState) {
-                                            return AlertDialog(
-                                              title: Row(
-                                                children: [
-                                                  Text(
-                                                    'Choose Device',
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          size.height * 0.020,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: textColor,
+                                      navigateTo(
+                                          context,
+                                          BluetoothScreen(
+                                              docId: data[index]['id'],
+                                              email: data[index]['email'],
+                                              position_local: positionLocal));
+                                    }
+                                    bluetooth.scanDevices().then((value) {
+                                      setState(() {});
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return StatefulBuilder(
+                                            builder: (context, setState) {
+                                              return AlertDialog(
+                                                title: Row(
+                                                  children: [
+                                                    Text(
+                                                      'Choose Device',
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            size.height * 0.020,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color: textColor,
+                                                      ),
                                                     ),
-                                                  ),
-                                                  const Spacer(),
-                                                  IconButton(
-                                                    onPressed: () {
-                                                      setState(() {});
-                                                    },
-                                                    icon: const Icon(
-                                                      size: 18,
-                                                      Icons.refresh_rounded,
-                                                      color: textColor,
+                                                    const Spacer(),
+                                                    IconButton(
+                                                      onPressed: () {
+                                                        setState(() {});
+                                                      },
+                                                      icon: const Icon(
+                                                        size: 18,
+                                                        Icons.refresh_rounded,
+                                                        color: textColor,
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                              content: SingleChildScrollView(
-                                                child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      ListView.builder(
-                                                        shrinkWrap: true,
-                                                        itemCount: bluetooth
-                                                            .devices.length,
-                                                        itemBuilder:
-                                                            (context, index1) =>
-                                                                Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: Container(
-                                                            width:
-                                                                double.infinity,
-                                                            decoration:
-                                                                const BoxDecoration(
-                                                                    color:
-                                                                        background,
-                                                                    boxShadow: [
-                                                                  BoxShadow(
-                                                                    blurRadius:
-                                                                        5.0,
-                                                                    blurStyle:
-                                                                        BlurStyle
-                                                                            .outer,
-                                                                    color:
-                                                                        textColor,
-                                                                  ),
-                                                                ]),
-                                                            child: Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(8.0),
-                                                              child: InkWell(
-                                                                onTap:
-                                                                    () async {
-                                                                  bluetooth
-                                                                      .device = bluetooth
-                                                                          .devices[
-                                                                      index1];
-                                                                  int isConnected =
-                                                                      await bluetooth
-                                                                          .connectDevice();
-                                                                  if (isConnected ==
-                                                                      0) {
-                                                                    print(
-                                                                      data[index]
-                                                                          [
-                                                                          'gpsLat'],
-                                                                    );
-                                                                    print(
-                                                                      data[index]
-                                                                          [
-                                                                          'gpsLong'],
-                                                                    );
-                                                                    Position position = Position(
-                                                                        longitude: data[index]
+                                                  ],
+                                                ),
+                                                content: SingleChildScrollView(
+                                                  child: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        ListView.builder(
+                                                          shrinkWrap: true,
+                                                          itemCount: bluetooth
+                                                              .devices.length,
+                                                          itemBuilder: (context,
+                                                                  index1) =>
+                                                              Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(8.0),
+                                                            child: Container(
+                                                              width: double
+                                                                  .infinity,
+                                                              decoration:
+                                                                  const BoxDecoration(
+                                                                      color:
+                                                                          background,
+                                                                      boxShadow: [
+                                                                    BoxShadow(
+                                                                      blurRadius:
+                                                                          5.0,
+                                                                      blurStyle:
+                                                                          BlurStyle
+                                                                              .outer,
+                                                                      color:
+                                                                          textColor,
+                                                                    ),
+                                                                  ]),
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        8.0),
+                                                                child: InkWell(
+                                                                  onTap:
+                                                                      () async {
+                                                                    bluetooth
+                                                                        .device = bluetooth
+                                                                            .devices[
+                                                                        index1];
+                                                                    int isConnected =
+                                                                        await bluetooth
+                                                                            .connectDevice();
+                                                                    if (isConnected ==
+                                                                        0) {
+                                                                      print(
+                                                                        data[index]
                                                                             [
                                                                             'gpsLat'],
-                                                                        latitude:
-                                                                            data[index][
-                                                                                'gpsLong'],
-                                                                        timestamp:
-                                                                            DateTime
-                                                                                .now(),
-                                                                        accuracy:
-                                                                            1,
-                                                                        altitude:
-                                                                            1,
-                                                                        heading:
-                                                                            1,
-                                                                        speed:
-                                                                            1,
-                                                                        speedAccuracy:
-                                                                            1);
-                                                                    navigateTo(
-                                                                        context,
-                                                                        NewScreen(
-                                                                          data[index]
+                                                                      );
+                                                                      print(
+                                                                        data[index]
+                                                                            [
+                                                                            'gpsLong'],
+                                                                      );
+                                                                      Position position = Position(
+                                                                          longitude: data[index]
                                                                               [
-                                                                              'email'],
-                                                                          data[index]
+                                                                              'gpsLat'],
+                                                                          latitude: data[index]
                                                                               [
-                                                                              'id'],
-                                                                          position:
-                                                                              position,
-                                                                          bluetooth:
-                                                                              bluetooth,
-                                                                        ));
+                                                                              'gpsLong'],
+                                                                          timestamp: DateTime
+                                                                              .now(),
+                                                                          accuracy:
+                                                                              1,
+                                                                          altitude:
+                                                                              1,
+                                                                          heading:
+                                                                              1,
+                                                                          speed:
+                                                                              1,
+                                                                          speedAccuracy:
+                                                                              1);
+                                                                      navigateTo(
+                                                                          context,
+                                                                          NewScreen(
+                                                                            data[index]['email'],
+                                                                            data[index]['id'],
+                                                                            position:
+                                                                                position,
+                                                                            bluetooth:
+                                                                                bluetooth,
+                                                                          ));
 
-                                                                    setState(
-                                                                        () {
-                                                                      data.removeAt(
-                                                                          index);
-                                                                    });
-                                                                  } else {}
-                                                                },
-                                                                child: Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    Text(
-                                                                      bluetooth
-                                                                              .devices[index1]
-                                                                              .name ??
-                                                                          'Unknown Device',
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontSize:
-                                                                            size.height *
-                                                                                0.017,
-                                                                        fontWeight:
-                                                                            FontWeight.w400,
-                                                                        color:
-                                                                            textColor,
+                                                                      setState(
+                                                                          () {
+                                                                        data.removeAt(
+                                                                            index);
+                                                                      });
+                                                                    } else {}
+                                                                  },
+                                                                  child: Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: [
+                                                                      Text(
+                                                                        bluetooth.devices[index1].name ??
+                                                                            'Unknown Device',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              size.height * 0.017,
+                                                                          fontWeight:
+                                                                              FontWeight.w400,
+                                                                          color:
+                                                                              textColor,
+                                                                        ),
                                                                       ),
-                                                                    ),
-                                                                    Text(
-                                                                      bluetooth
-                                                                          .devices[
-                                                                              index1]
-                                                                          .address,
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontSize:
-                                                                            size.height *
-                                                                                0.017,
-                                                                        fontWeight:
-                                                                            FontWeight.w400,
-                                                                        color:
-                                                                            textColor,
+                                                                      Text(
+                                                                        bluetooth
+                                                                            .devices[index1]
+                                                                            .address,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              size.height * 0.017,
+                                                                          fontWeight:
+                                                                              FontWeight.w400,
+                                                                          color:
+                                                                              textColor,
+                                                                        ),
                                                                       ),
-                                                                    ),
-                                                                  ],
+                                                                    ],
+                                                                  ),
                                                                 ),
                                                               ),
                                                             ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ]),
-                                              ),
-                                            );
-                                          },
-                                        );
+                                                      ]),
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                      );
+                                    });
+                                    print(bluetooth.devices);
+                                  } else {
+                                    DeleteTestOrdersToFirestore(
+                                        'boat_orders', data[index]['id']);
+                                    setState(
+                                      () {
+                                        data.removeWhere((element) {
+                                          return element['id'] ==
+                                              data[index]['id'];
+                                        });
                                       },
                                     );
-                                  });
-
-                                  print(bluetooth.devices);
+                                    navigateBack(context);
+                                  }
                                 },
                                 child: Text(
                                   'Accept',

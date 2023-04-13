@@ -321,6 +321,9 @@ class _NewScreenState extends State<NewScreen>
                                     child: InkWell(
                                       onTap: () {
                                         print(mapcontroller.center);
+                                        bluetooth.sendData(
+                                            '@${position.latitude.toString()},${position.longitude.toString()};');
+
                                         cubit.readData(bluetooth);
                                         setState(() {
                                           isChosen = true;

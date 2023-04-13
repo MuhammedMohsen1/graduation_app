@@ -1,12 +1,12 @@
 import 'package:application_gp/Constants/constant.dart';
 import 'package:application_gp/components/navigator.dart';
 import 'package:application_gp/modules/Payment/payment.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class ShipScreen extends StatelessWidget {
-  const ShipScreen({super.key});
-
+  ShipScreen({super.key});
+  Map<String, dynamic>? information;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -87,14 +87,24 @@ class ShipScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
           child: ElevatedButton(
             onPressed: () {
+              information = {
+                'owner': FirebaseAuth.instance.currentUser?.email,
+                'name': 'Mohsen',
+                'id': '1V10001',
+                'version': '1.0.1',
+                'battery': 3.0,
+                'price': 8999.99,
+              };
               navigateTo(
                   context,
                   Payment(
                     price: 8999.99,
+                    isShip: true,
+                    data: information!,
                   ));
             },
             style: ButtonStyle(
-              animationDuration: Duration(milliseconds: 600),
+              animationDuration: const Duration(milliseconds: 600),
               backgroundColor:
                   MaterialStateColor.resolveWith((states) => background),
             ),

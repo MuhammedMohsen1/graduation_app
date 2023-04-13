@@ -45,6 +45,94 @@ Future<void> addTestToFirestore(
   }
 }
 
+Future<void> addBoatOrderToFirestore(
+  String Modelname,
+  String owner,
+  int time,
+  double gpsLat,
+  double gpsLong,
+  double price,
+  double battery,
+  String version,
+) async {
+  try {
+    // Get a reference to the Firestore collection
+    CollectionReference testsCollection =
+        FirebaseFirestore.instance.collection('boat_orders');
+
+    // Create a new document in the tests collection
+    DocumentReference newTestRef = testsCollection.doc();
+
+    // Set the data for the new document
+    await newTestRef.set({
+      'owner': owner,
+      'name': Modelname,
+      'time': time,
+      'gpsLat': gpsLat,
+      'gpsLong': gpsLong,
+      'price': price,
+      'battery': battery,
+      'version': version,
+    });
+
+    print('Test added to Firestore with ID: ${newTestRef.id}');
+  } catch (e) {
+    print('Error adding test to Firestore: $e');
+  }
+}
+
+Future<List<Map<String, dynamic>>> fetchBoatOrdersFromFirestore() async {
+  List<Map<String, dynamic>> testList = [];
+
+  try {
+    // Get a reference to the Firestore collection
+    CollectionReference testsCollection =
+        FirebaseFirestore.instance.collection('boat_orders');
+
+    // Query the collection for all documents
+    QuerySnapshot querySnapshot = await testsCollection.get();
+
+    // Loop through the documents and add the data for each one to the testList
+    for (var doc in querySnapshot.docs) {
+      Map<String, dynamic> testMap = {
+        'id': doc.id,
+        'time': doc.get('time'),
+        'name': doc.get('name'),
+        'gpsLat': doc.get('gpsLat'),
+        'gpsLong': doc.get('gpsLong'),
+        'owner': doc.get('owner'),
+        'price': doc.get('price'),
+        'version': doc.get('version'),
+        'battery': doc.get('battery'),
+      };
+      testList.add(testMap);
+    }
+  } catch (e) {
+    print('Error fetching tests from Firestore: $e');
+  }
+
+  return testList;
+}
+
+Future<void> DeleteTestOrdersToFirestore(
+    String collection, String docId) async {
+  try {
+    // Get a reference to the Firestore collection
+    CollectionReference testsCollection =
+        FirebaseFirestore.instance.collection(collection);
+
+    // Create a new document in the tests collection
+    DocumentReference newTestRef = testsCollection.doc(docId);
+
+    // Set the data for the new document
+    await newTestRef.delete();
+
+    print('Test Order Deleted to Firestore with ID: ${newTestRef.id}');
+  } catch (e) {
+    print('Error Deleting test Order from  Firestore: $e');
+  }
+}
+
 Future<void> addTestOrdersToFirestore(
   String email,
   int time,
