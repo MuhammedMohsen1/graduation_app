@@ -16,7 +16,7 @@ class Getting_data {
       String data = globalData.join();
 
       List<String> localData = data.split(RegExp('[@;]'));
-
+      print(localData);
       // Cleaning list of dirty elements
       localData.removeWhere((element) {
         final regExp = RegExp(",");
@@ -28,7 +28,8 @@ class Getting_data {
       });
 
       List<String> fields = localData.first.split(',');
-
+      print('fields');
+      print(fields);
       // || Parsing
 
       String modelName = fields[0].substring(1);
@@ -45,21 +46,31 @@ class Getting_data {
 
       double turbidity = double.parse(fields[6]);
 
+      if (int.parse(fields[7]) == 2) {
+        pH = double.parse(fields[3]);
+        temperature = double.parse(fields[4]);
+        tds = double.parse(fields[5]);
+        turbidity = double.parse(fields[6]);
+      }
+
       int status1 = int.parse(fields[7]);
 
       int errorCode = int.parse(fields[8]);
 
       // || Assigning into model
-      test = testData(
-          modelName: modelName,
-          gps_lat: gpsLat,
-          gps_long: gpsLong,
-          pH: pH,
-          Temperature: temperature,
-          TDS: tds,
-          turbidity: turbidity,
-          status: status1,
-          errorCode: errorCode);
+
+      test.modelName = modelName;
+      test.gps_lat = gpsLat;
+      test.gps_long = gpsLong;
+      if (status1 == 2) {
+        test.pH = pH;
+        test.Temperature = temperature;
+        test.TDS = tds;
+        test.turbidity = turbidity;
+      }
+      test.status = status1;
+      test.errorCode = errorCode;
+
       print('success');
     } catch (ex) {
       print(ex);

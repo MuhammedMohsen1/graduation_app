@@ -43,6 +43,7 @@ class _NewScreenState extends State<NewScreen>
   final status = [
     'Navigating Towards goal',
     'Collecting data',
+    'Successful',
     'Navigating back ',
     'Done ',
   ];
@@ -319,11 +320,11 @@ class _NewScreenState extends State<NewScreen>
                                         ? Alignment.bottomRight
                                         : Alignment.bottomCenter,
                                     child: InkWell(
-                                      onTap: () {
+                                      onTap: () async {
                                         print(mapcontroller.center);
-                                        bluetooth.sendData(
+                                        await bluetooth.sendData(
                                             '@${position.latitude.toString()},${position.longitude.toString()};');
-
+                                        print('Before reading');
                                         cubit.readData(bluetooth);
                                         setState(() {
                                           isChosen = true;

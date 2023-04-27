@@ -75,13 +75,13 @@ class Bluetooth {
     });
   }
 
-  void sendData(String data) async {
+  Future<void> sendData(String data) async {
     Uint8List localData = ascii.encode(data);
     connection?.output.add(localData);
 
     var result = await connection?.output.allSent;
 
-    print(result);
+    print(localData);
     print('Sent Successfully');
   }
 
