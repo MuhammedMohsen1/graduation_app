@@ -1,4 +1,4 @@
-![image](https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/b8b3aafa-6cc4-406d-937b-e4679503a224)# Water Quality Monitoring Application
+# Water Quality Monitoring Application
 
 ## Overview
 This Flutter-based application is designed to control the movement of a boat equipped with embedded systems engineering to collect water quality readings. The primary goal is to classify water as polluted or not based on parameters such as pH, turbidity, temperature, and TDS using dedicated sensors.
@@ -14,7 +14,7 @@ This Flutter-based application is designed to control the movement of a boat equ
 - **Sensor Readings:** Retrieve real-time data from pH, turbidity, temperature, and TDS sensors.
 - **Bluetooth Connectivity:** Establish a connection to collect sensor readings.
 - **Navigation Monitoring:** Utilize TomTom maps for real-time boat navigation.
-
+![image](https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/b8b3aafa-6cc4-406d-937b-e4679503a224)
 ### 3. Staff Dashboard
 - **Test Creation:** Staff can initiate new water quality tests.
 - **Test Process:** Involves moving the boat, taking readings via Bluetooth, and monitoring navigation.
@@ -26,13 +26,13 @@ This Flutter-based application is designed to control the movement of a boat equ
 - **View Nearest Tests:** Clients can check the nearest water quality tests based on their location.
 - ![image](https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/95836902-ada3-455a-bf3b-98bdc230eb68)
 - **View All Tests:** Access a comprehensive list of all tests conducted.
-- ![image](https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/71fbb6a1-beed-42f6-ad1b-0a8e4a74072b)
+  ![image](https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/71fbb6a1-beed-42f6-ad1b-0a8e4a74072b)
 
 - **Request New Test:** Clients can request a new water quality test in a specific location.
-- ![image](https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/901d1013-2b6e-4b1b-82e8-4bfb1799a72a)
+  ![image](https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/901d1013-2b6e-4b1b-82e8-4bfb1799a72a)
 
 - **Boat Purchase:** Clients can purchase a new boat using the integrated payment gateway.
-- ![image](https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/c01498fb-791f-4988-8849-00eb2f483db6)
+ ![image](https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/c01498fb-791f-4988-8849-00eb2f483db6)
 
 
 
