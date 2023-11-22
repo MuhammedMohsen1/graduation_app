@@ -20,7 +20,7 @@ This Flutter-based application is designed to control the movement of a boat equ
 - **Test Process:** Involves moving the boat, taking readings via Bluetooth, and monitoring navigation.
 - **Pollution Tracking:** Display a dashboard with the total number of polluted water instances.
 - **Boat Purchase Confirmation:** Staff can confirm boat purchases and initiate new tests in specific locations.
-<img src="https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/3ef8d989-4877-4708-af78-ae4ef26a8e3f" width="200" height="200">
+![image](https://github.com/MuhammedMohsen1/graduation_app/blob/main/assets/93712905/3ef8d989-4877-4708-af78-ae4ef26a8e3f)
 ![image](https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/c7f58744-920a-420e-afed-808e45dfb5ba)
 ### 4. Client Dashboard
 - **View Nearest Tests:** Clients can check the nearest water quality tests based on their location.
