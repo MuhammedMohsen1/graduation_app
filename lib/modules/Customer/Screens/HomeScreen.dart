@@ -343,7 +343,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 SmallDataChar(
                   size: size,
                   classification:
-                      nearest_test['temperature'] == 0 ? "Normal" : "Danger",
+                      nearest_test['tds'] < 400 ? "Regular " : "Irregular",
                   icon: Icons.electric_bolt_outlined,
                   name: "Conductivity",
                 ),
@@ -353,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 SmallDataChar(
                   size: size,
                   classification:
-                      nearest_test['temperature'] == 0 ? "Fine" : "Danger",
+                      nearest_test['tds'] < 400 ? "Fine" : "Critical",
                   name: "Oxygen",
                 ),
               ],
@@ -427,8 +427,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               CircularWidget(
                 size: size,
-                data: [ChartData('normal', 2.5), ChartData('test', 15)],
-                maximum: 20,
+                data: [ChartData('normal', 10), ChartData('test', 15)],
+                maximum: 80,
                 title: 'Turbidity',
               ),
             ],
@@ -437,13 +437,13 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               CircularWidget(
                 size: size,
-                data: [ChartData('normal', 300), ChartData('test', 400)],
+                data: [ChartData('normal', 500), ChartData('test', 400)],
                 maximum: 600,
                 title: 'TDS',
               ),
               CircularWidget(
                 size: size,
-                data: [ChartData('normal', 2.5), ChartData('test', 1)],
+                data: [ChartData('normal', 25), ChartData('test', 1)],
                 maximum: 3,
                 title: 'Temperature',
               ),

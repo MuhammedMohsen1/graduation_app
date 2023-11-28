@@ -598,7 +598,7 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                           ),
                                         ),
                                         Text(
-                                          '%${100 - percentage}',
+                                          '%${(100 - percentage).roundToDouble()}',
                                           style: TextStyle(
                                             color: textColor,
                                             fontWeight: FontWeight.w300,
@@ -630,7 +630,7 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                                           ),
                                         ),
                                         Text(
-                                          '%$percentage',
+                                          '%${percentage.roundToDouble()}',
                                           style: TextStyle(
                                             color: textColor,
                                             fontWeight: FontWeight.w300,

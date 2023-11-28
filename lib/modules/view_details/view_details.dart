@@ -5,8 +5,10 @@ import 'package:flutter_map/flutter_map.dart';
 
 import '../../Constants/constant.dart';
 import '../../Models/testData.dart';
-import '../../components/DetailsChar.dart';
+
 import '../../components/navigator.dart';
+import '../../layout/dashboard_layout.dart';
+import '../Customer/Customer_Dashboard.dart';
 
 class ViewDetails extends StatelessWidget {
   const ViewDetails(
@@ -188,45 +190,59 @@ class ViewDetails extends StatelessWidget {
                 height: 8.0,
               ),
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
+                  mainAxisSize: MainAxisSize.max,
                   children: [
-                    DetailsChar(
-                      normal: 20,
-                      range: 30,
-                      test_data: test.TDS,
-                      variable_name: "TDS",
-                      size: size,
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    Row(
+                      children: [
+                        CircularWidget(
+                          size: size,
+                          data: [
+                            ChartData('normal', 7),
+                            ChartData('test', test.pH)
+                          ],
+                          maximum: 14,
+                          title: 'pH',
+                        ),
+                        CircularWidget(
+                          size: size,
+                          data: [
+                            ChartData('normal', 10),
+                            ChartData('test', test.turbidity)
+                          ],
+                          maximum: 60,
+                          title: 'Turbidity',
+                        ),
+                      ],
                     ),
                     const SizedBox(
                       height: 16,
                     ),
-                    DetailsChar(
-                      normal: 7,
-                      range: 14,
-                      test_data: test.pH,
-                      variable_name: "Ph",
-                      size: size,
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    DetailsChar(
-                      normal: 14,
-                      range: 20,
-                      test_data: test.turbidity,
-                      variable_name: "Turbidly",
-                      size: size,
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    DetailsChar(
-                      normal: 32,
-                      range: 40,
-                      test_data: test.Temperature,
-                      variable_name: "Temperature",
-                      size: size,
+                    Row(
+                      children: [
+                        CircularWidget(
+                          size: size,
+                          data: [
+                            ChartData('normal', 500),
+                            ChartData('test', test.TDS)
+                          ],
+                          maximum: 10000,
+                          title: 'TDS',
+                        ),
+                        CircularWidget(
+                          size: size,
+                          data: [
+                            ChartData('normal', 30),
+                            ChartData('test', test.Temperature)
+                          ],
+                          maximum: 50,
+                          title: 'Temperature',
+                        ),
+                      ],
                     ),
                     const SizedBox(
                       height: 16,
@@ -235,7 +251,8 @@ class ViewDetails extends StatelessWidget {
                       children: [
                         SmallDataChar(
                           size: size,
-                          classification: "Normal",
+                          classification:
+                              test.TDS > 400 ? 'Irregular' : 'Regular',
                           icon: Icons.electric_bolt_outlined,
                           name: "Conductivity",
                         ),
@@ -244,7 +261,7 @@ class ViewDetails extends StatelessWidget {
                         ),
                         SmallDataChar(
                           size: size,
-                          classification: "Fine",
+                          classification: test.TDS < 400 ? 'Fine' : 'Critical',
                           name: "Oxygen",
                         ),
                       ],

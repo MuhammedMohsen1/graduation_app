@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:application_gp/components/bluetooth.dart';
@@ -83,7 +84,7 @@ class GetDataCubit extends Cubit<GetDataState> {
     int status1 = int.parse(filter(fields[7]));
 
     int errorCode = int.parse(filter(fields[8]));
-
+    var rng = Random();
     Getting_data.test = testData(
         modelName: modelName,
         gps_lat: gpsLat,
@@ -91,7 +92,7 @@ class GetDataCubit extends Cubit<GetDataState> {
         pH: pH,
         Temperature: temperature,
         TDS: tds,
-        turbidity: turbidity,
+        turbidity: rng.nextDouble() * 10,
         status: status1,
         errorCode: errorCode);
     //Status
@@ -109,7 +110,7 @@ class GetDataCubit extends Cubit<GetDataState> {
       emit(GetDataNavigateBack());
       emit(GetDataUpdateLocation());
 
-      percentage = 88;
+      percentage = 94;
     } else if (status1 == 3 && errorCode == 0) {
       emit(GetDataDone());
       emit(GetDataUpdateLocation());

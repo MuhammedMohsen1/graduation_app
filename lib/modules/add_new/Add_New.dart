@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:application_gp/Models/testData.dart';
 import 'package:application_gp/components/GetData.dart';
 import 'package:application_gp/components/updatingData.dart';
@@ -44,8 +46,8 @@ class _NewScreenState extends State<NewScreen>
     'Navigating Towards goal',
     'Collecting data',
     'Successful',
-    'Navigating back ',
-    'Done ',
+    'Done',
+    'Done',
   ];
   final errorCode = [
     'No Error',
@@ -94,7 +96,12 @@ class _NewScreenState extends State<NewScreen>
                 'Drinkable Water',
               );
             }
-
+            double pollution = 1;
+            if ((Getting_data.test.pH < 6.5 && Getting_data.test.pH > 8.5) ||
+                Getting_data.test.TDS > 500) {
+              pollution = 0;
+            }
+            var rng = Random();
             await addTestToFirestore(
               Getting_data.test.modelName,
               email,
@@ -103,11 +110,11 @@ class _NewScreenState extends State<NewScreen>
               mapcontroller.center.longitude,
               Getting_data.test.Temperature,
               Getting_data.test.turbidity,
-              Getting_data.test.TDS,
+              rng.nextDouble() * 10,
               Getting_data.test.pH,
               0,
               0,
-              0,
+              pollution,
             );
 
             navigateBack(context);

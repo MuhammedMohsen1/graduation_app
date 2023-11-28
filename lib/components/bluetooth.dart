@@ -45,7 +45,7 @@ class Bluetooth {
         showToast('Connected to the device', TOAST_STATUS.TOAST_SUCCESS);
         return 0; // SUCCESS
       }
-      return 0; // SUCCESS
+      return 0;
     } catch (exception) {
       devices.remove(device);
       showToast('Cannot Connect', TOAST_STATUS.TOAST_FAILED);
