@@ -23,24 +23,24 @@ This Flutter-based application is designed to control the movement of a boat equ
 - **Pollution Tracking:** Display a dashboard with the total number of polluted water instances.
 - **Boat Purchase Confirmation:** Staff can confirm boat purchases and initiate new tests in specific locations.
 - 
-  <img src="https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/b8b3aafa-6cc4-406d-937b-e4679503a224" width=200 >
+
 
 ### 4. Client Dashboard
 - **View Nearest Tests:** Clients can check the nearest water quality tests based on their location.
   
-  <img src="https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/95836902-ada3-455a-bf3b-98bdc230eb68" width=200 >
+
   
 - **View All Tests:** Access a comprehensive list of all tests conducted.
 
-<img src="https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/71fbb6a1-beed-42f6-ad1b-0a8e4a74072b" width=200 >
+
 
 - **Request New Test:** Clients can request a new water quality test in a specific location.
 
-<img src="https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/901d1013-2b6e-4b1b-82e8-4bfb1799a72a" width=200 >
+
 
 - **Boat Purchase:** Clients can purchase a new boat using the integrated payment gateway.
 
-<img src="https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/c01498fb-791f-4988-8849-00eb2f483db6" width=200 >
+
 
 
   
@@ -49,10 +49,16 @@ This Flutter-based application is designed to control the movement of a boat equ
 ## Usage
 - **Login/Signup:** Use the provided credentials to log in or sign up.
 
-<img src="https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/d1351c39-fe69-4fdd-9493-30969505e67c" width=200 >
+
 
 - **Staff:** Access the staff dashboard for boat control, testing, and pollution tracking.
 - **Client:** Explore the client dashboard to view and request water quality tests.
+
+# SCREENS
+![ASWQM1](https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/eeaa8dfe-6121-4155-a5ad-b417349b2f34)
+![ASWQM2](https://github.com/MuhammedMohsen1/graduation_app/assets/93712905/e955d75e-307c-4684-a175-a7df288a7f05)
+
+
 
 ## Contributors
 - Mohamemd Mohsen
